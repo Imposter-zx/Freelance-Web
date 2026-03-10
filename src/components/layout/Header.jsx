@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import { Moon, Sun, Menu, X, User } from 'lucide-react';
+import { useMessages } from '../../context/MessageContext';
+import { Moon, Sun, Menu, X, User, MessageSquare, PlusCircle, Settings } from 'lucide-react';
 
 const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const { user, logout } = useAuth();
+    const { unreadCount } = useMessages();
     const location = useLocation();
 
     useEffect(() => {
@@ -57,12 +59,26 @@ const Header = () => {
                         </button>
 
                         {user ? (
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3">
+                                <Link to="/messages" className="relative p-2 rounded-full hover:bg-bg-soft transition-colors">
+                                    <MessageSquare size={20} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </Link>
+                                <Link to="/post-project" className="p-2 rounded-full hover:bg-bg-soft transition-colors" title="Publier un projet">
+                                    <PlusCircle size={20} />
+                                </Link>
                                 <Link to="/dashboard" className="text-sm font-semibold flex items-center gap-2">
                                     <User size={18} />
                                     <span>Dashboard</span>
                                 </Link>
-                                <button onClick={logout} className="btn btn-secondary py-2 text-xs">Déconnexion</button>
+                                <Link to="/settings" className="p-2 rounded-full hover:bg-bg-soft transition-colors" title="Parametres">
+                                    <Settings size={18} />
+                                </Link>
+                                <button onClick={logout} className="btn btn-secondary py-2 text-xs">Deconnexion</button>
                             </div>
                         ) : (
                             <>
@@ -102,7 +118,12 @@ const Header = () => {
                         {user ? (
                             <>
                                 <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Tableau de bord</Link>
-                                <button onClick={logout} className="btn btn-secondary w-full">Déconnexion</button>
+                                <Link to="/messages" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between">
+                                    Messages {unreadCount > 0 && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{unreadCount}</span>}
+                                </Link>
+                                <Link to="/post-project" onClick={() => setIsMobileMenuOpen(false)}>Publier un projet</Link>
+                                <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)}>Parametres</Link>
+                                <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="btn btn-secondary w-full">Deconnexion</button>
                             </>
                         ) : (
                             <>

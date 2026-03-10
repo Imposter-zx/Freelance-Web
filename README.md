@@ -10,20 +10,24 @@ Une plateforme moderne et performante pour connecter les entreprises avec les me
 - **SEO Optimisé** : Gestion dynamique des métadonnées avec React Helmet.
 - **Sécurité** : Routes protégées et authentification (persistée localement).
 - **Performance** : Chargement rapide et code optimisé.
+- **Messagerie** : Système de chat en temps réel entre clients et freelances.
+- **Gestion de Projets** : Publiez et gérez vos projets facilement.
+- **Profils Freelances** : Pages de profil détaillées avec portfolio et avis.
+- **Recherche Avancée** : Filtres par compétences, note, expérience.
 
 ## 🛠 Tech Stack
 
-- **Frontend** : React, Vite
+- **Frontend** : React 19, Vite
 - **Animations** : Framer Motion
 - **Icons** : Lucide React
-- **Routing** : React Router DOM 6
-- **Styling** : Vanilla CSS avec Design Tokens modernes (variables CSS)
+- **Routing** : React Router DOM 7
+- **Styling** : Tailwind CSS avec Design Tokens modernes
 
 ## 📦 Installation et Lancement Local
 
 1. Clonez le projet :
    ```bash
-   git clone [url-du-repo]
+   git clone https://github.com/Imposter-zx/Freelance-Web.git
    ```
 
 2. Installez les dépendances :
@@ -46,8 +50,16 @@ src/
 │   ├── common/      # Composants génériques (SEO, SEOMeta)
 │   ├── layout/      # Structure de base (Header, Footer)
 │   └── features/    # Composants spécifiques à des fonctionnalités
-├── context/         # Gestion d'état (AuthContext)
+├── context/         # Gestion d'état (AuthContext, MessageContext)
 ├── pages/           # Pages de l'application
+│   ├── Home.jsx
+│   ├── Dashboard.jsx
+│   ├── Messages.jsx
+│   ├── PostProject.jsx
+│   ├── Profile.jsx
+│   ├── SearchFreelance.jsx
+│   ├── Settings.jsx
+│   └── ...
 ├── services/        # Mock data et logique métier
 └── App.jsx          # Configuration des routes
 ```
