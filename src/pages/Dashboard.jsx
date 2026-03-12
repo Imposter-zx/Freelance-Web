@@ -9,6 +9,8 @@ import {
     DollarSign, Users, Clock, CheckCircle, FileText, ArrowRight, Eye
 } from 'lucide-react';
 
+import StatsCard from '../components/features/StatsCard';
+
 const Dashboard = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -21,29 +23,29 @@ const Dashboard = () => {
     }, []);
 
     const stats = [
-        { label: 'Projets Actifs', value: postedProjects.filter(p => p.status === 'open').length || '3', icon: <Briefcase size={20} />, color: 'bg-blue-500' },
-        { label: 'Total Depenses', value: '4,250€', icon: <DollarSign size={20} />, color: 'bg-green-500' },
-        { label: 'Messages', value: unreadCount || '3', icon: <MessageSquare size={20} />, color: 'bg-amber-500' },
-        { label: 'Profils vus', value: '156', icon: <Eye size={20} />, color: 'bg-indigo-500' },
+        { label: 'Projets Actifs', value: postedProjects.filter(p => p.status === 'open').length || '3', icon: <Briefcase size={20} />, color: 'bg-blue-500', trend: '+2' },
+        { label: 'Total Dépenses', value: '4,250€', icon: <DollarSign size={20} />, color: 'bg-green-500', trend: '+12%' },
+        { label: 'Messages', value: unreadCount || '3', icon: <MessageSquare size={20} />, color: 'bg-amber-500', trend: unreadCount > 0 ? `+${unreadCount}` : '0' },
+        { label: 'Profils vus', value: '156', icon: <Eye size={20} />, color: 'bg-indigo-500', trend: '+24' },
     ];
 
     const recentActivity = [
         { type: 'message', text: 'Nouveau message de Jean Dupont', time: 'Il y a 2h' },
         { type: 'proposal', text: 'Nouvelle proposition pour "Site e-commerce"', time: 'Il y a 5h' },
-        { type: 'project', text: 'Projet "Refonte branding" livre', time: 'Hier' },
-        { type: 'payment', text: 'Paiement recu: 1,200€', time: 'Hier' },
+        { type: 'project', text: 'Projet "Refonte branding" livrable', time: 'Hier' },
+        { type: 'payment', text: 'Paiement reçu: 1,200€', time: 'Hier' },
     ];
 
     const quickActions = [
         { label: 'Publier un projet', icon: <PlusCircle size={20} />, path: '/post-project', color: 'bg-blue-600' },
         { label: 'Rechercher freelances', icon: <Users size={20} />, path: '/search', color: 'bg-purple-600' },
         { label: 'Mes messages', icon: <MessageSquare size={20} />, path: '/messages', color: 'bg-amber-600' },
-        { label: 'Parametres', icon: <Bell size={20} />, path: '/settings', color: 'bg-gray-600' },
+        { label: 'Paramètres', icon: <Bell size={20} />, path: '/settings', color: 'bg-gray-600' },
     ];
 
     return (
         <div className="min-h-screen pt-32 pb-20 bg-bg-soft">
-            <SEOMeta title="Dashboard" description="Gerez vos projets et suivez votre progression." />
+            <SEOMeta title="Dashboard" description="Gérez vos projets et suivez votre progression." />
 
             <div className="container">
                 <motion.div
@@ -54,7 +56,7 @@ const Dashboard = () => {
                     <h1 className="text-4xl font-bold font-outfit mb-2">
                         Bonjour, {user?.name || 'Freelance'} 👋
                     </h1>
-                    <p className="text-text-soft">Voici un apercu de votre activite aujourd'hui.</p>
+                    <p className="text-text-soft">Voici un aperçu de votre activité aujourd'hui.</p>
                 </motion.div>
 
                 <motion.div 
@@ -66,7 +68,7 @@ const Dashboard = () => {
                         <button
                             key={idx}
                             onClick={() => navigate(action.path)}
-                            className={`${action.color} text-white p-4 rounded-2xl flex items-center gap-3 hover:opacity-90 transition-opacity`}
+                            className={`${action.color} text-white p-4 rounded-2xl flex items-center gap-3 hover:opacity-90 transition-opacity shadow-sm`}
                         >
                             {action.icon}
                             <span className="font-medium text-sm">{action.label}</span>
@@ -76,22 +78,11 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     {stats.map((stat, idx) => (
-                        <motion.div
+                        <StatsCard
                             key={stat.label}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="bg-bg-main p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all"
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`${stat.color} text-white p-3 rounded-xl`}>
-                                    {stat.icon}
-                                </div>
-                                <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-md">+12%</span>
-                            </div>
-                            <h3 className="text-text-soft text-sm font-medium">{stat.label}</h3>
-                            <p className="text-2xl font-bold font-outfit">{stat.value}</p>
-                        </motion.div>
+                            {...stat}
+                            delay={idx * 0.1}
+                        />
                     ))}
                 </div>
 
@@ -107,7 +98,11 @@ const Dashboard = () => {
                             <div className="divide-y divide-border">
                                 {postedProjects.length > 0 ? (
                                     postedProjects.slice(0, 5).map((project, idx) => (
-                                        <div key={idx} className="p-6 flex items-center justify-between hover:bg-bg-soft transition-colors cursor-pointer group">
+                                        <div 
+                                            key={idx} 
+                                            className="p-6 flex items-center justify-between hover:bg-bg-soft transition-colors cursor-pointer group"
+                                            onClick={() => navigate(`/project/${project.id || idx + 1}`)}
+                                        >
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                                                     <FileText size={20} />
@@ -118,22 +113,26 @@ const Dashboard = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold text-sm mb-1">{project.budgetMin && project.budgetMax ? `${project.budgetMin}-${project.budgetMax}€` : 'Budget non defini'}</p>
+                                                <p className="font-bold text-sm mb-1">{project.budgetMin && project.budgetMax ? `${project.budgetMin}-${project.budgetMax}€` : 'Budget non défini'}</p>
                                                 <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${
                                                     project.status === 'open' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'
                                                 }`}>
-                                                    {project.status === 'open' ? 'Ouvert' : 'Ferme'}
+                                                    {project.status === 'open' ? 'Ouvert' : 'Fermé'}
                                                 </span>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
                                     [
-                                        { name: "Plateforme E-learning", client: "TechEdu", status: "En cours", price: "2,400€" },
-                                        { name: "Refonte Branding", client: "GreenCo", status: "Livre", price: "1,200€" },
-                                        { name: "App Mobile Fitness", client: "FitLife", status: "En attente", price: "3,500€" },
+                                        { id: 1, name: "Plateforme E-learning", client: "TechEdu", status: "En cours", price: "2,400€" },
+                                        { id: 2, name: "Refonte Branding", client: "GreenCo", status: "Livré", price: "1,200€" },
+                                        { id: 3, name: "App Mobile Fitness", client: "FitLife", status: "En attente", price: "3,500€" },
                                     ].map((project, idx) => (
-                                        <div key={idx} className="p-6 flex items-center justify-between hover:bg-bg-soft transition-colors cursor-pointer group">
+                                        <div 
+                                            key={idx} 
+                                            className="p-6 flex items-center justify-between hover:bg-bg-soft transition-colors cursor-pointer group"
+                                            onClick={() => navigate(`/project/${project.id}`)}
+                                        >
                                             <div>
                                                 <h4 className="font-bold mb-1 group-hover:text-blue-600 transition-colors">{project.name}</h4>
                                                 <p className="text-xs text-text-soft">Client: {project.client}</p>

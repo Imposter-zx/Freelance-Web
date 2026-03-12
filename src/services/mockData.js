@@ -45,3 +45,39 @@ export const freelancers = [
         rating: 4.8
     }
 ];
+
+export const projects = [
+    {
+        id: 1,
+        title: "Plateforme E-learning",
+        description: "Nous recherchons un développeur React pour créer une plateforme d'apprentissage en ligne avec gestion de cours et quiz interactifs.",
+        budgetMin: 2000,
+        budgetMax: 5000,
+        skills: ["React", "Node.js", "PostgreSQL"],
+        createdAt: new Date().toISOString(),
+        status: "open",
+        client: "TechEdu"
+    },
+    {
+        id: 2,
+        title: "Refonte Branding",
+        description: "Besoin d'un designer pour moderniser l'identité visuelle d'une startup dans le domaine de la GreenTech.",
+        budgetMin: 800,
+        budgetMax: 1500,
+        skills: ["Figma", "Adobe Suite", "Branding"],
+        createdAt: new Date().toISOString(),
+        status: "open",
+        client: "GreenCo"
+    },
+    {
+        id: 3,
+        title: "App Mobile Fitness",
+        description: "Développement d'une application mobile de suivi de fitness avec intégration de montres connectées.",
+        budgetMin: 3000,
+        budgetMax: 7000,
+        skills: ["React Native", "Firebase", "TypeScript"],
+        createdAt: new Date().toISOString(),
+        status: "open",
+        client: "FitLife"
+    }
+];
