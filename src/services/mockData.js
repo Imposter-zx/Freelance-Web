@@ -26,7 +26,8 @@ export const freelancers = [
         role: "Développeur Fullstack Senior",
         experience: "8 ans",
         skills: ["React", "Node.js", "AWS"],
-        rating: 4.9
+        rating: 4.9,
+        description: "Développeur passionné avec plus de 8 ans d'expérience dans la création d'applications web et mobiles performantes. Spécialiste en React, Node.js et solutions cloud AWS."
     },
     {
         id: 2,
@@ -34,7 +35,8 @@ export const freelancers = [
         role: "UX/UI Designer & Expert Webflow",
         experience: "5 ans",
         skills: ["Figma", "Webflow", "Prototyping"],
-        rating: 5.0
+        rating: 5.0,
+        description: "Designer créative spécialisée dans la conception d'interfaces utilisateur intuitives et esthétiques. Expertise en prototypage rapide et développement no-code."
     },
     {
         id: 3,
@@ -42,7 +44,8 @@ export const freelancers = [
         role: "Expert SEO & Content Strategist",
         experience: "6 ans",
         skills: ["SEO", "Copywriting", "Analytics"],
-        rating: 4.8
+        rating: 4.8,
+        description: "Expert en stratégie de contenu et référencement naturel. J'aide les entreprises à augmenter leur visibilité en ligne et à générer du trafic qualifié."
     }
 ];
 

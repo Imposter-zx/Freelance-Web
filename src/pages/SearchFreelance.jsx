@@ -6,6 +6,7 @@ import SEOMeta from '../components/common/SEOMeta';
 import { useLanguage } from '../context/LanguageContext';
 import { Search, MapPin, Star, Filter, MessageCircle, Briefcase, X, SlidersHorizontal, Zap } from 'lucide-react';
 import { containerVariants, itemVariants } from '../utils/animations';
+import { ProjectDescription } from '../components/pretext';
 
 const SearchFreelance = () => {
   const navigate = useNavigate();
@@ -343,6 +344,21 @@ const SearchFreelance = () => {
                       {skill}
                     </motion.span>
                   ))}
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 + 0.15 }}
+                  className="mb-4"
+                >
+                  <ProjectDescription 
+                    text={freelance.description || `${freelance.name} est un ${freelance.role} avec ${freelance.experience} d'expérience. Spécialisé en ${freelance.skills.join(', ')}.`}
+                    maxLines={2}
+                    lineHeight={18}
+                    className="text-sm"
+                  />
                 </motion.div>
 
                 <motion.div 

@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useMessages } from '../context/MessageContext';
 import { Send, Search, MoreVertical, Phone, Video, ArrowLeft } from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
+import MessagePreview from '../components/pretext/MessagePreview';
+import MessageBubble from '../components/pretext/MessageBubble';
 
 const Messages = () => {
     const {
@@ -107,7 +109,11 @@ const Messages = () => {
                                             <span className="font-bold text-sm truncate">{conv.participantName}</span>
                                             <span className="text-xs text-text-soft">{formatTime(conv.timestamp)}</span>
                                         </div>
-                                        <p className="text-xs text-text-soft truncate">{conv.lastMessage || 'Nouvelle conversation'}</p>
+                                        <MessagePreview 
+                                            text={conv.lastMessage || 'Nouvelle conversation'} 
+                                            maxWidth={200}
+                                            maxLines={1}
+                                        />
                                     </div>
                                     {conv.unread > 0 && (
                                         <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
@@ -169,18 +175,13 @@ const Messages = () => {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className={`flex mb-4 ${msg.senderId === 'user' ? 'justify-end' : 'justify-start'}`}
                                             >
-                                                <div className={`max-w-[70%] ${msg.senderId === 'user' ? 'order-2' : 'order-1'}`}>
-                                                    <div className={`px-5 py-3 rounded-2xl ${
-                                                        msg.senderId === 'user' 
-                                                            ? 'bg-blue-600 text-white rounded-br-md' 
-                                                            : 'bg-bg-soft border border-border rounded-bl-md'
-                                                    }`}>
-                                                        <p className="text-sm">{msg.text}</p>
-                                                    </div>
-                                                    <span className={`text-xs text-text-soft mt-1 block ${msg.senderId === 'user' ? 'text-right' : 'text-left'}`}>
-                                                        {formatTime(msg.timestamp)}
-                                                    </span>
-                                                </div>
+                                                <MessageBubble 
+                                                    text={msg.text}
+                                                    isUser={msg.senderId === 'user'}
+                                                    timestamp={msg.timestamp}
+                                                    maxWidth={280}
+                                                    className={msg.senderId === 'user' ? 'order-2' : 'order-1'}
+                                                />
                                             </motion.div>
                                         ))}
                                     </div>
