@@ -8,6 +8,7 @@ import {
     Mail, Phone, Globe, Calendar, ThumbsUp, MessageCircle,
     ChevronLeft, Share2, Heart
 } from 'lucide-react';
+import ProjectDescription from '../components/pretext/ProjectDescription';
 
 const Profile = () => {
     const { id } = useParams();
@@ -120,14 +121,10 @@ const Profile = () => {
                             <div className="p-8">
                                 {activeTab === 'about' && (
                                     <div className="space-y-6">
-                                        <div>
-                                            <h3 className="text-lg font-bold mb-3">A propos</h3>
-                                            <p className="text-text-soft leading-relaxed">
-                                                Developpeur Fullstack passionne avec plus de {freelancer.experience || '8 ans'} d'experience dans la creation 
-                                                d'applications web et mobiles performantes. Je suis specialiste en React, Node.js et solutions cloud AWS.
-                                                Mon objectif est de deliver des solutions elegantes qui repondent aux besoins specifiques de chaque client.
-                                            </p>
-                                        </div>
+                                <div>
+                                    <h3 className="text-lg font-bold mb-3">A propos</h3>
+                                    <ProjectDescription text={freelancer.description || ''} maxLines={3} lineHeight={20} />
+                                </div>
 
                                         <div>
                                             <h3 className="text-lg font-bold mb-3">Competences</h3>
