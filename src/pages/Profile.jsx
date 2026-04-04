@@ -53,8 +53,12 @@ const Profile = () => {
                             className="bg-bg-main rounded-3xl border border-border p-8 shadow-sm"
                         >
                             <div className="flex flex-col sm:flex-row gap-6">
-                                <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center text-blue-600 font-bold text-5xl shrink-0">
-                                    {freelancer.name.charAt(0)}
+                                <div className="w-32 h-32 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shrink-0">
+                                    {freelancer.photo ? (
+                                        <img src={freelancer.photo} alt={freelancer.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-3xl font-bold text-blue-600">{freelancer.name.charAt(0)}</span>
+                                    )}
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">

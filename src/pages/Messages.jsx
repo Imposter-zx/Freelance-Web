@@ -101,8 +101,12 @@ const Messages = () => {
                                         activeConversation?.id === conv.id ? 'bg-bg-soft' : ''
                                     }`}
                                 >
-                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center text-blue-600 font-bold shrink-0">
-                                        {conv.participantAvatar}
+                                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0">
+                                        {conv.photo ? (
+                                            <img src={conv.photo} alt={conv.participantName} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center w-full h-full text-blue-600 font-bold">{conv.participantAvatar}</span>
+                                        )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-center mb-1">
