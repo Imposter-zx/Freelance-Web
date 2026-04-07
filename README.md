@@ -12,19 +12,20 @@ Une plateforme moderne et performante pour connecter les entreprises avec les me
 - **Sécurité** : Routes protégées et authentification (persistée localement)
 
 ### Communication
-- **Messagerie en temps réel** : Chat avec prévisualisation intelligente des messages
+- **Messagerie en temps réel** : Chat avec prévisualisation intelligente des messages utilisant @chenglou/pretext pour un rendu optimal
 - **Notifications** : Système de notifications avec badge de compteur
 - **Statut en ligne** : Indicateur de disponibilité des utilisateurs
 
 ### Gestion de Projets
-- **Publier un projet** : Formulaire multi-étapes (informations, budget, compétences)
+- **Publier un projet** : Formulaire multi-étapes (informations, budget, compétences, durée)
 - **Déposer des projets** : Les freelances peuvent soumettre des propositions
-- **Suivi de projets** : Dashboard avec statistiques et progression
+- **Suivi de projets** : Dashboard avec statistiques, progression et analytics
 
 ### Profils & Recherche
-- **Profils détaillés** : Portfolio, avis, compétences, tarifs horaires
+- **Profils détaillés** : Portfolio, avis, compétences, tarifs horaires, photo de profil
 - **Recherche avancée** : Filtres par compétences, note, expérience, localisation
-- **Cartes de freelances** : Affichage optimisé avec prévisualisation
+- **Cartes de freelances** : Affichage optimisé avec photo de profil et prévisualisation intelligente
+- **Profils Expansible** : Sections détaillables avec animation fluide
 
 ### Paramètres
 - **Profil utilisateur** : Photo, bio, localisation, compétences
@@ -42,6 +43,7 @@ Une plateforme moderne et performante pour connecter les entreprises avec les me
 | **Icons** | Lucide React |
 | **Routing** | React Router DOM 7 |
 | **SEO** | React Helmet Async |
+| **State Management** | React Context API |
 
 ## 📦 Installation
 
@@ -65,13 +67,13 @@ src/
 ├── components/
 │   ├── common/          # Composants génériques (SEO, LoadingSpinner)
 │   ├── layout/          # Structure de base (Header, Footer)
-│   ├── features/        # Composants spécifiques
-│   └── pretext/         # Composants de texte avec pretext
+│   ├── features/        # Composants spécifiques à des fonctionnalités
+│   └── pretext/         # Composants de texte avec pretext pour un rendu optimisé
 │       ├── MessageBubble.jsx
 │       ├── MessagePreview.jsx
 │       ├── ProjectDescription.jsx
 │       └── TextMeasure.jsx
-├── context/             # Gestion d'état
+├── context/             # Gestion d'état global
 │   ├── AuthContext.jsx
 │   ├── MessageContext.jsx
 │   ├── NotificationContext.jsx
@@ -87,21 +89,26 @@ src/
 │   ├── Settings.jsx
 │   ├── Login.jsx
 │   └── CreateAccount.jsx
-├── services/            # Mock data
-├── utils/               # Utilitaires
+├── services/            # Données mock et logique métier
+│   └── mockData.js
+├── utils/               # Utilitaires et animations
 │   └── animations.js
+├── designs_refresh.css  # Styles de design global et polish
 └── App.jsx              # Configuration des routes
 ```
 
 ## 🎨 Animations
 
-Le projet utilise Framer Motion avec 50+ animations :
-- **Entrée** : fadeInUp, fadeInDown, scaleIn, rotateIn
-- **Scroll** : whileInView pour les éléments visibles
-- **Hover** : scale, glow, lift
-- **Continues** : float, pulse, shimmer, gradient
-- **Staggered** : Animations séquentielles pour les listes
+Le projet utilise Framer Motion avec 60+ animations :
 
+- **Entrée** : fadeInUp, fadeInDown, scaleIn, rotateIn
+- **Scroll** : whileInView pour les éléments visibles au défilement
+- **Hover** : scale, glow, lift, pulse
+- **Continues** : float, pulse, shimmer, gradient, marquee
+- **Staggered** : Animations séquentielles pour les listes et grilles
+- **Spéciales** : compteur, souligne animé, effet de surbrillance, transition de section
+
+Exemple d'utilisation :
 ```javascript
 import { fadeInUp, containerVariants, itemVariants } from './utils/animations';
 
@@ -112,11 +119,14 @@ import { fadeInUp, containerVariants, itemVariants } from './utils/animations';
 
 ## 🔤 Pretext Integration
 
-Le projet utilise [@chenglou/pretext](https://github.com/chenglou/pretext) pour :
-- **Mesure de texte** sans reflow DOM
-- **Layout multilingue** supportant toutes les langues
-- **Performance** : ~0.09ms pour 500 mesures de texte
+Le projet utilise [@chenglou/pretext](https://github.com/chenglou/pretext) pour une mesure et un layout de texte optimisés :
 
+- **Mesure de texte** sans reflow DOM (performance ~0.09ms pour 500 mesures)
+- **Layout multilingue** supportant toutes les langues incluant les emojis
+- **Truncation intelligente** basée sur les lignes réelles plutôt que sur le nombre de caractères
+- **Gestion du débordement** avec expansion/réduction fluide
+
+Utilisation dans les composants :
 ```javascript
 import { prepare, layout } from '@chenglou/pretext';
 
@@ -124,18 +134,28 @@ const prepared = prepare('Bonjour le monde', '16px Inter');
 const { height, lineCount } = layout(prepared, 300, 1.5);
 ```
 
+Composants prétext personnalisés :
+- **MessageBubble** : rendu optimisé des bulles de chat
+- **MessagePreview** : aperçu intelligent avec troncation basée sur les lignes
+- **ProjectDescription** : description expansible avec animation fluide
+- **TextMeasure** : hook React pour la mesure de texte
+
 ## 🌐 Déploiement
 
 Optimisé pour **Vercel** ou **Netlify** :
+
 - Fichier `vercel.json` inclus pour les redirections SPA
 - Build production avec `npm run build`
+- Variables d'environnement supportées pour la configuration
 
 ## 📊 Performance
 
 - **Build size** : ~536 kB (gzipped: ~162 kB)
 - **CSS** : ~44 kB (gzipped: ~8.5 kB)
-- **Lazy loading** : Composants chargés à la demande
-- **Optimisé** : GPU-accelerated animations
+- **JavaScript** : ~290 kB (gzipped: ~85 kB) après treeshaking
+- **Lazy loading** : Composants chargés à la demande via routing
+- **Optimisé** : GPU-accelerated animations avec requestAnimationFrame
+- **Text Layout** : Prétext réduit significativement le coût de mesure de texte
 
 ## 🤝 Contribution
 
@@ -152,3 +172,6 @@ Ce projet est sous licence MIT.
 ---
 
 **Développé avec ❤️ par ZORD Team**
+
+Dernière mise à jour : Avril 2026
+Version : 0.3.0
