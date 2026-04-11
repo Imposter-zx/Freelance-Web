@@ -1,15 +1,29 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import AnimatedCounter from '../common/AnimatedCounter';
 
-const StatsCard = ({ label, value, icon, color, trend, delay = 0 }) => {
+const StatsCard = ({ label, value, icon, color, trend, delay = 0, suffix = '', prefix = '' }) => {
+    // Parse numeric value if it's a string like "4,250€"
+    const numericValue = typeof value === 'string' 
+        ? parseFloat(value.replace(/[^0-9.]/g, '')) 
+        : value;
+
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, y: 30, rotateX: -10 }}
+            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay, duration: 0.5, ease: "easeOut" }}
-            whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
-            className="bg-bg-main p-6 rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden"
+            transition={{ delay, duration: 0.6, type: "spring", stiffness: 100 }}
+            whileHover={{ 
+                y: -10, 
+                rotateX: 5, 
+                rotateY: 2, 
+                scale: 1.02,
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+            }}
+            className="bg-bg-main p-6 rounded-2xl border border-border shadow-sm hover:shadow-lg transition-shadow group cursor-pointer relative overflow-hidden preserve-3d"
+            style={{ perspective: "1000px" }}
         >
             {/* Animated background gradient */}
             <motion.div
@@ -23,7 +37,7 @@ const StatsCard = ({ label, value, icon, color, trend, delay = 0 }) => {
                 <div className="flex items-center justify-between mb-4">
                     <motion.div
                         className={`${color} text-white p-3 rounded-xl`}
-                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        whileHover={{ scale: 1.2, rotate: 15 }}
                         transition={{ type: "spring", stiffness: 400 }}
                     >
                         {icon}
@@ -43,15 +57,14 @@ const StatsCard = ({ label, value, icon, color, trend, delay = 0 }) => {
                     )}
                 </div>
                 <h3 className="text-text-soft text-sm font-medium">{label}</h3>
-                <motion.p
-                    className="text-2xl font-bold font-outfit mt-2"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: delay + 0.3 }}
-                >
-                    {value}
-                </motion.p>
+                <div className="text-2xl font-bold font-outfit mt-2 flex items-baseline gap-1">
+                    <AnimatedCounter 
+                        value={numericValue} 
+                        delay={delay + 0.5} 
+                        prefix={prefix} 
+                        suffix={suffix || (typeof value === 'string' && value.includes('€') ? '€' : '')} 
+                    />
+                </div>
             </div>
         </motion.div>
     );

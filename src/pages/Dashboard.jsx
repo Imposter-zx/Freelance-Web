@@ -23,25 +23,22 @@ const Dashboard = () => {
     }, []);
 
     const stats = [
-        { label: 'Projets Actifs', value: postedProjects.filter(p => p.status === 'open').length || '3', icon: <Briefcase size={20} />, color: 'bg-blue-500', trend: '+2' },
-        { label: 'Total Dépenses', value: '4,250€', icon: <DollarSign size={20} />, color: 'bg-green-500', trend: '+12%' },
-        { label: 'Messages', value: unreadCount || '3', icon: <MessageSquare size={20} />, color: 'bg-amber-500', trend: unreadCount > 0 ? `+${unreadCount}` : '0' },
-        { label: 'Profils vus', value: '156', icon: <Eye size={20} />, color: 'bg-indigo-500', trend: '+24' },
+        { label: 'Projets Actifs', value: postedProjects.filter(p => p.status === 'open').length || 3, icon: <Briefcase size={20} />, color: 'bg-blue-500', trend: '+2' },
+        { label: 'Total Dépenses', value: 4250, suffix: '€', icon: <DollarSign size={20} />, color: 'bg-green-500', trend: '+12%' },
+        { label: 'Messages', value: unreadCount || 3, icon: <MessageSquare size={20} />, color: 'bg-amber-500', trend: unreadCount > 0 ? `+${unreadCount}` : '0' },
+        { label: 'Profils vus', value: 156, icon: <Eye size={20} />, color: 'bg-indigo-500', trend: '+24' },
     ];
 
-    const recentActivity = [
-        { type: 'message', text: 'Nouveau message de Jean Dupont', time: 'Il y a 2h' },
-        { type: 'proposal', text: 'Nouvelle proposition pour "Site e-commerce"', time: 'Il y a 5h' },
-        { type: 'project', text: 'Projet "Refonte branding" livrable', time: 'Hier' },
-        { type: 'payment', text: 'Paiement reçu: 1,200€', time: 'Hier' },
-    ];
-
-    const quickActions = [
-        { label: 'Publier un projet', icon: <PlusCircle size={20} />, path: '/post-project', color: 'bg-blue-600' },
-        { label: 'Rechercher freelances', icon: <Users size={20} />, path: '/search', color: 'bg-purple-600' },
-        { label: 'Mes messages', icon: <MessageSquare size={20} />, path: '/messages', color: 'bg-amber-600' },
-        { label: 'Paramètres', icon: <Bell size={20} />, path: '/settings', color: 'bg-gray-600' },
-    ];
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.2
+            }
+        }
+    };
 
     return (
         <div className="min-h-screen pt-32 pb-20 bg-bg-soft">
@@ -49,42 +46,62 @@ const Dashboard = () => {
 
             <div className="container">
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
+                    transition={{ type: "spring", stiffness: 100 }}
                     className="mb-8"
                 >
-                    <h1 className="text-4xl font-bold font-outfit mb-2">
+                    <h1 className="text-4xl md:text-5xl font-bold font-outfit mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                         Bonjour, {user?.name || 'Freelance'} 👋
                     </h1>
-                    <p className="text-text-soft">Voici un aperçu de votre activité aujourd'hui.</p>
+                    <p className="text-text-soft text-lg">Voici un aperçu de votre activité aujourd'hui.</p>
                 </motion.div>
 
                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
                 >
                     {quickActions.map((action, idx) => (
-                        <button
+                        <motion.button
                             key={idx}
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0 }
+                            }}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => navigate(action.path)}
-                            className={`${action.color} text-white p-4 rounded-2xl flex items-center gap-3 hover:opacity-90 transition-opacity shadow-sm`}
+                            className={`${action.color} text-white p-5 rounded-2xl flex items-center justify-center md:justify-start gap-4 hover:opacity-95 transition-all shadow-md hover:shadow-xl`}
                         >
-                            {action.icon}
-                            <span className="font-medium text-sm">{action.label}</span>
-                        </button>
+                            <div className="bg-white/20 p-2 rounded-lg truncate">
+                                {action.icon}
+                            </div>
+                            <span className="font-bold text-sm hidden md:block">{action.label}</span>
+                        </motion.button>
                     ))}
                 </motion.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+                >
                     {stats.map((stat, idx) => (
-                        <StatsCard
-                            key={stat.label}
-                            {...stat}
-                            delay={idx * 0.1}
-                        />
+                        <motion.div key={stat.label} variants={{
+                            hidden: { opacity: 0, y: 30 },
+                            visible: { opacity: 1, y: 0 }
+                        }}>
+                            <StatsCard
+                                {...stat}
+                                delay={0} // Staggered by container
+                            />
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-8">

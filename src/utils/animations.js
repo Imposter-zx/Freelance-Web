@@ -126,3 +126,25 @@ export const shimmer = {
     }
   }
 };
+
+// 3D Tilt and Premium Interactions
+export const cardTilt = {
+  initial: { rotateX: 0, rotateY: 0, perspective: 1000 },
+  hover: {
+    rotateX: 2,
+    rotateY: 2,
+    scale: 1.02,
+    transition: { type: "spring", stiffness: 400, damping: 20 }
+  }
+};
+
+export const cardHover3D = {
+  whileHover: { 
+    y: -10,
+    rotateX: 5,
+    rotateY: 5,
+    perspective: 1000,
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    transition: { type: "spring", stiffness: 300, damping: 15 }
+  }
+};
