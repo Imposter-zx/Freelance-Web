@@ -60,27 +60,40 @@ const Hero = () => {
                 animate="visible"
             >
                 {/* Badge with animation */}
-                <motion.span 
-                    className="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6 border border-blue-100 animate-pulse"
+                <motion.div 
+                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6 border border-blue-100"
                     variants={badgeVariants}
                 >
-                    ✨ Propulsé par l'IA et les Talents Humains
-                </motion.span>
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    ✨ 150+ freelances actifs aujourd'hui
+                </motion.div>
 
                 {/* Title with staggered word animation */}
                 <motion.h1 
                     className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight text-gray-900"
                     variants={titleVariants}
                 >
-                    Trouvez des{' '}
+                    {["La", "plateforme", "élite", "pour", "vos"].map((word, i) => (
+                        <motion.span 
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 * i + 0.5, duration: 0.5 }}
+                            className="inline-block mr-3"
+                        >
+                            {word}
+                        </motion.span>
+                    ))}
                     <motion.span 
-                        className="text-blue-600 inline-block"
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="text-blue-600 inline-block underline-hover"
+                        animate={{ scale: [1, 1.05, 1], rotate: [0, 1, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                     >
-                        freelances
-                    </motion.span>{' '}
-                    ou des projets
+                        projets
+                    </motion.span>
                 </motion.h1>
 
                 {/* Subtitle */}

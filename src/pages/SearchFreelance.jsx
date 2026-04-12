@@ -37,17 +37,24 @@ const SearchFreelance = () => {
     return matchesSearch && matchesSkills && matchesRating;
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Simulate loading when filters change
+  const handleFilterChange = (newFilters) => {
+    setIsLoading(true);
+    setFilters(newFilters);
+    setTimeout(() => setIsLoading(false), 800);
+  };
+
   const toggleSkill = (skill) => {
-    setFilters(prev => ({
-      ...prev,
-      skills: prev.skills.includes(skill) 
-        ? prev.skills.filter(s => s !== skill)
-        : [...prev.skills, skill]
-    }));
+    const newSkills = filters.skills.includes(skill) 
+        ? filters.skills.filter(s => s !== skill)
+        : [...filters.skills, skill];
+    handleFilterChange({ ...filters, skills: newSkills });
   };
 
   const clearFilters = () => {
-    setFilters({ skills: [], minRating: 0, experience: '', location: '' });
+    handleFilterChange({ skills: [], minRating: 0, experience: '', location: '' });
   };
 
   const activeFiltersCount = filters.skills.length + (filters.minRating > 0 ? 1 : 0) + (filters.experience ? 1 : 0);
@@ -258,7 +265,25 @@ const SearchFreelance = () => {
           initial="hidden"
           animate="visible"
         >
-          {filteredFreelancers.map((freelance, idx) => (
+          {isLoading ? (
+            // Skeleton Loading State
+            [1, 2, 3, 4].map((n) => (
+              <div key={n} className="bg-bg-main p-8 rounded-3xl border border-border shadow-sm flex flex-col sm:flex-row gap-8">
+                <div className="w-24 h-24 skeleton shrink-0" />
+                <div className="flex-grow space-y-4">
+                  <div className="h-6 w-1/3 skeleton" />
+                  <div className="h-4 w-1/4 skeleton" />
+                  <div className="h-4 w-full skeleton" />
+                  <div className="h-4 w-5/6 skeleton" />
+                  <div className="flex gap-2">
+                    <div className="h-8 w-16 skeleton" />
+                    <div className="h-8 w-16 skeleton" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            filteredFreelancers.map((freelance, idx) => (
             <motion.div
               key={freelance.id}
               variants={itemVariants}

@@ -19,8 +19,15 @@ const Header = () => {
     const { t } = useLanguage();
     const location = useLocation();
 
+    const { scrollYProgress } = motion.useScroll();
+    const scaleX = motion.useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
+
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -54,11 +61,17 @@ const Header = () => {
     };
 
     return (
-        <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'glass py-3' : 'bg-transparent py-5'}`}>
-            <div className="container flex items-center justify-between">
-                <Link to="/" className="text-2xl font-bold tracking-tight text-blue-600 font-outfit hover:scale-105 transition-transform">
-                    ZORD
-                </Link>
+        <>
+            <motion.div
+                className="fixed top-0 left-0 right-0 h-1 bg-blue-600 z-[60] origin-left"
+                style={{ scaleX }}
+            />
+            <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${isScrolled ? 'glass py-3 shadow-lg' : 'bg-transparent py-6'}`}>
+                <div className="container flex items-center justify-between">
+                    <Link to="/" className="text-2xl font-bold tracking-tighter text-blue-600 font-outfit hover:scale-105 transition-transform flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl">Z</div>
+                        <span>ZORD</span>
+                    </Link>
 
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center gap-8">
