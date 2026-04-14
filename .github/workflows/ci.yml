@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+    branches:
+      - feature/ci-workflow
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint --if-present
+      - run: npm test --if-present
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'CI: Add GitHub Actions workflow'
+          body: 'CI workflow added to build, lint, and test on push and PRs. Auto-generated PR.'
+          base: main
+          head: feature/ci-workflow
