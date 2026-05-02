@@ -4,7 +4,7 @@ import SEOMeta from '../components/common/SEOMeta';
 import { services } from '../services/mockData';
 import { ArrowRight, CheckCircle, Star, Users, Zap, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { containerVariants, itemVariants } from '../utils/animations';
+import { containerVariants, itemVariants, cardTilt, parallaxMove, staggerContainer } from '../utils/animations';
 import { useLanguage } from '../context/LanguageContext';
 
 const Home = () => {
@@ -50,16 +50,15 @@ const Home = () => {
 
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-32 pb-20 md:pt-48 md:pb-32 bg-bg-main">
-                {/* Animated background blobs */}
+                {/* Animated background blobs with Parallax */}
                 <motion.div 
                     className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-[120px] opacity-50 dark:opacity-20" 
-                    animate={{ y: [0, 40, 0] }}
-                    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                    {...parallaxMove}
                 />
                 <motion.div 
                     className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-indigo-100 rounded-full blur-[120px] opacity-50 dark:opacity-20"
-                    animate={{ y: [0, -40, 0] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    {...parallaxMove}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                 />
 
                 <div className="container relative z-10 text-center">
@@ -212,17 +211,15 @@ const Home = () => {
                             <motion.div
                                 key={idx}
                                 variants={itemVariants}
-                                className="p-10 border border-border rounded-2xl hover:border-blue-300 transition-all relative overflow-hidden group cursor-pointer"
-                                whileHover={{ y: -8, boxShadow: "0 20px 50px rgba(37, 99, 235, 0.2)" }}
+                                className="p-10 border border-border rounded-2xl bg-bg-main relative overflow-hidden group cursor-pointer"
+                                {...cardTilt}
                             >
                                 <motion.div
-                                    className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 opacity-0"
-                                    whileHover={{ opacity: 0.05 }}
-                                    transition={{ duration: 0.3 }}
+                                    className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 opacity-0 group-hover:opacity-5 transition-opacity"
                                 />
                                 <div className="relative z-10">
-                                    <h3 className="text-2xl mb-4 font-outfit">{service.title}</h3>
-                                    <p className="text-text-soft mb-6">{service.description}</p>
+                                    <h3 className="text-2xl mb-4 font-outfit font-bold">{service.title}</h3>
+                                    <p className="text-text-soft mb-6 leading-relaxed">{service.description}</p>
                                     <Link to="/search" className="text-blue-600 font-bold flex items-center gap-2 hover:gap-3 transition-all group/link">
                                         {t('common.explore')}
                                         <motion.div
@@ -264,8 +261,8 @@ const Home = () => {
                             <motion.div
                                 key={idx}
                                 variants={itemVariants}
-                                className="group relative overflow-hidden rounded-2xl bg-white dark:bg-dark-surface shadow-md cursor-pointer"
-                                whileHover={{ y: -8 }}
+                                className="group relative overflow-hidden rounded-2xl bg-white dark:bg-dark-surface shadow-lg cursor-pointer"
+                                {...cardTilt}
                             >
                                 <div className="aspect-[4/3] overflow-hidden relative">
                                     <motion.img
@@ -277,31 +274,21 @@ const Home = () => {
                                         transition={{ duration: 0.6 }}
                                     />
                                     <motion.div
-                                        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        initial={{ opacity: 0 }}
-                                        whileHover={{ opacity: 1 }}
+                                        className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity"
                                     />
                                 </div>
                                 <div className="p-6">
                                     <h3 className="text-lg font-bold mb-3">{item.title}</h3>
-                                    <motion.div 
-                                        className="flex gap-2 flex-wrap"
-                                        initial="hidden"
-                                        whileHover="visible"
-                                        variants={containerVariants}
-                                    >
-                                        {item.tags.map((tag, tagIdx) => (
-                                            <motion.span 
+                                    <div className="flex gap-2 flex-wrap">
+                                        {item.tags.map((tag) => (
+                                            <span 
                                                 key={tag} 
                                                 className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs rounded-full font-semibold"
-                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                whileHover={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: tagIdx * 0.05 }}
                                             >
                                                 {tag}
-                                            </motion.span>
+                                            </span>
                                         ))}
-                                    </motion.div>
+                                    </div>
                                 </div>
                             </motion.div>
                         ))}

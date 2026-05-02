@@ -130,21 +130,44 @@ export const shimmer = {
 // 3D Tilt and Premium Interactions
 export const cardTilt = {
   initial: { rotateX: 0, rotateY: 0, perspective: 1000 },
-  hover: {
-    rotateX: 2,
-    rotateY: 2,
-    scale: 1.02,
-    transition: { type: "spring", stiffness: 400, damping: 20 }
+  whileHover: {
+    rotateX: 5,
+    rotateY: 5,
+    scale: 1.05,
+    transition: { type: "spring", stiffness: 300, damping: 15 }
   }
 };
 
-export const cardHover3D = {
-  whileHover: { 
-    y: -10,
-    rotateX: 5,
-    rotateY: 5,
-    perspective: 1000,
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-    transition: { type: "spring", stiffness: 300, damping: 15 }
+export const parallaxMove = {
+  animate: {
+    y: [0, -20, 0],
+    x: [0, 10, 0],
+    transition: { 
+      duration: 10, 
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
   }
+};
+
+export const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.3
+    }
+  }
+};
+
+export const confettiAnimation = () => {
+    import('canvas-confetti').then(confetti => {
+        confetti.default({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#2563eb', '#4f46e5', '#3b82f6']
+        });
+    });
 };

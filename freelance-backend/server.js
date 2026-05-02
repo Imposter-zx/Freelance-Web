@@ -6,6 +6,7 @@ import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import projectRoutes from './src/routes/projects.js';
 import messageRoutes from './src/routes/messages.js';
+import paymentRoutes from './src/routes/payments.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 import { requestLogger } from './src/middleware/requestLogger.js';
 
@@ -43,6 +44,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {

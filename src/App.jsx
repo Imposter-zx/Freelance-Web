@@ -18,6 +18,7 @@ import PostProject from './pages/PostProject';
 import Profile from './pages/Profile';
 import ProjectDetails from './pages/ProjectDetails';
 import Settings from './pages/Settings';
+import PaymentPage from './pages/PaymentPage';
 import ProtectedRoute from './ProtectedRoute';
 
 function App() {
@@ -57,6 +58,11 @@ function App() {
                     <Route path="/settings" element={
                       <ProtectedRoute>
                         <Settings />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/checkout" element={
+                      <ProtectedRoute>
+                        <PaymentPage />
                       </ProtectedRoute>
                     } />
                   </Routes>
