@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useMessages } from '../../context/MessageContext';
 import { useNotifications } from '../../context/NotificationContext';
@@ -19,8 +19,8 @@ const Header = () => {
     const { t } = useLanguage();
     const location = useLocation();
 
-    const { scrollYProgress } = motion.useScroll();
-    const scaleX = motion.useSpring(scrollYProgress, {
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
         stiffness: 100,
         damping: 30,
         restDelta: 0.001

@@ -29,6 +29,20 @@ const Dashboard = () => {
         { label: 'Profils vus', value: 156, icon: <Eye size={20} />, color: 'bg-indigo-500', trend: '+24' },
     ];
 
+    const quickActions = [
+        { label: 'Publier un projet', path: '/post-project', icon: <PlusCircle size={20} />, color: 'bg-blue-600' },
+        { label: 'Messages', path: '/messages', icon: <MessageSquare size={20} />, color: 'bg-indigo-600' },
+        { label: 'Trouver un freelance', path: '/search', icon: <Users size={20} />, color: 'bg-emerald-600' },
+        { label: 'Paramètres', path: '/settings', icon: <Bell size={20} />, color: 'bg-amber-600' },
+    ];
+
+    const recentActivity = [
+        { type: 'message', text: 'Nouveau message de TechEdu', time: 'Il y a 2 h' },
+        { type: 'proposal', text: 'Proposition envoyée pour "Refonte Branding"', time: 'Hier' },
+        { type: 'project', text: 'Projet "App Mobile Fitness" livré', time: 'Il y a 3 jours' },
+        { type: 'payment', text: 'Paiement de 1 200 € reçu', time: 'Il y a 5 jours' },
+    ];
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
