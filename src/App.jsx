@@ -21,6 +21,8 @@ import Settings from './pages/Settings';
 import PaymentPage from './pages/PaymentPage';
 import ProtectedRoute from './ProtectedRoute';
 
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
 function App() {
   return (
     <HelmetProvider>
@@ -28,7 +30,7 @@ function App() {
         <AuthProvider>
           <MessageProvider>
             <NotificationProvider>
-              <Router>
+              <Router basename={basename}>
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-grow">
