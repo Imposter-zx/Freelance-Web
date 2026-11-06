@@ -19,9 +19,9 @@ const Profile = () => {
     const freelancer = freelancers.find(f => f.id === parseInt(id)) || freelancers[0];
 
     const portfolio = [
-        { id: 1, title: 'E-commerce Platform', image: '/assets/Projet1.jpg', description: 'Plateforme e-commerce complete' },
-        { id: 2, title: 'Dashboard Analytics', image: '/assets/Projet2.jpg', description: 'Tableau de bord analytique' },
-        { id: 3, title: 'Mobile App', image: '/assets/Projet3.jpg', description: 'Application mobile iOS/Android' }
+        { id: 1, title: 'E-commerce Platform', image: `${import.meta.env.BASE_URL}assets/Projet1.jpg`, description: 'Plateforme e-commerce complete' },
+        { id: 2, title: 'Dashboard Analytics', image: `${import.meta.env.BASE_URL}assets/Projet2.jpg`, description: 'Tableau de bord analytique' },
+        { id: 3, title: 'Mobile App', image: `${import.meta.env.BASE_URL}assets/Projet3.jpg`, description: 'Application mobile iOS/Android' }
     ];
 
     const reviews = [

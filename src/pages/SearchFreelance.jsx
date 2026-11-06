@@ -412,7 +412,8 @@ const SearchFreelance = () => {
                 </motion.div>
               </div>
             </motion.div>
-          ))}
+            ))
+          )}
         </motion.div>
 
         {/* Empty State */}

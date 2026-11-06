@@ -324,6 +324,7 @@ const Header = () => {
                 )}
             </AnimatePresence>
         </header>
+        </>
     );
 };
 

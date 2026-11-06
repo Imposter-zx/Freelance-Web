@@ -11,9 +11,9 @@ const Home = () => {
     const { t } = useLanguage();
 
     const portfolio = [
-        { title: "Dashboard SaaS", image: "/assets/Projet1.jpg", tags: ["React", "Tailwind"] },
-        { title: "E-commerce App", image: "/assets/Projet2.jpg", tags: ["Next.js", "Stripe"] },
-        { title: "Brand Identity", image: "/assets/Projet3.jpg", tags: ["Figma", "Design"] }
+        { title: "Dashboard SaaS", image: `${import.meta.env.BASE_URL}assets/Projet1.jpg`, tags: ["React", "Tailwind"] },
+        { title: "E-commerce App", image: `${import.meta.env.BASE_URL}assets/Projet2.jpg`, tags: ["Next.js", "Stripe"] },
+        { title: "Brand Identity", image: `${import.meta.env.BASE_URL}assets/Projet3.jpg`, tags: ["Figma", "Design"] }
     ];
 
     const fadeInUp = {

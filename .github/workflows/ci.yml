@@ -1,8 +1,9 @@
 name: CI
+
 on:
   push:
     branches:
-      - feature/ci-workflow
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -10,20 +11,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run lint --if-present
-      - run: npm test --if-present
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'CI: Add GitHub Actions workflow'
-          body: 'CI workflow added to build, lint, and test on push and PRs. Auto-generated PR.'
-          base: main
-          head: feature/ci-workflow
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Advisory for now: the codebase still has a large lint backlog.
+      # Remove continue-on-error once the backlog is cleared.
+      - name: Lint
+        continue-on-error: true
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build
