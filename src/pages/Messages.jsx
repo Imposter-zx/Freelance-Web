@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, ExternalLink, MessageSquare, Search, Send } from 'lucide-react';
 import { useMessages } from '../context/MessageContext';
-import { Send, Search, MoreVertical, Phone, Video, ArrowLeft } from 'lucide-react';
+import { freelancers } from '../services/mockData';
 import SEOMeta from '../components/common/SEOMeta';
 import MessagePreview from '../components/pretext/MessagePreview';
 import MessageBubble from '../components/pretext/MessageBubble';
@@ -13,20 +15,40 @@ const Messages = () => {
         setActiveConversation,
         sendMessage,
         markAsRead,
-        getConversationMessages
+        startConversation,
+        getConversationMessages,
     } = useMessages();
 
+    const [searchParams] = useSearchParams();
     const [messageText, setMessageText] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const messagesEndRef = useRef(null);
 
-    const filteredConversations = conversations.filter(c =>
-        c.participantName.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredConversations = conversations.filter((conversation) =>
+        conversation.participantName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const currentMessages = activeConversation 
-        ? getConversationMessages(activeConversation.id) 
+    const currentMessages = activeConversation
+        ? getConversationMessages(activeConversation.id)
         : [];
+
+    // Deep link from a freelancer profile: /messages?to=<freelancerId>
+    useEffect(() => {
+        const participantId = Number(searchParams.get('to'));
+        if (!participantId) return;
+
+        const freelancer = freelancers.find((item) => item.id === participantId);
+        if (!freelancer) return;
+
+        const existing = conversations.find(
+            (conversation) => conversation.participantId === participantId
+        );
+        if (existing) {
+            setActiveConversation(existing);
+            return;
+        }
+        startConversation(freelancer);
+    }, [searchParams, conversations, setActiveConversation, startConversation]);
 
     useEffect(() => {
         if (activeConversation) {
@@ -35,15 +57,15 @@ const Messages = () => {
     }, [activeConversation?.id]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [currentMessages]);
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, [currentMessages.length, activeConversation?.id]);
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        if (messageText.trim() && activeConversation) {
-            sendMessage(activeConversation.id, messageText);
-            setMessageText('');
-        }
+    const handleSend = (event) => {
+        event.preventDefault();
+        const text = messageText.trim();
+        if (!text || !activeConversation) return;
+        sendMessage(activeConversation.id, text);
+        setMessageText('');
     };
 
     const formatTime = (timestamp) => {
@@ -57,169 +79,213 @@ const Messages = () => {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
-        if (date.toDateString() === today.toDateString()) return 'Aujourd hui';
+        if (date.toDateString() === today.toDateString()) return 'Aujourd’hui';
         if (date.toDateString() === yesterday.toDateString()) return 'Hier';
         return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
     };
 
-    const groupedMessages = currentMessages.reduce((acc, msg) => {
-        const date = formatDate(msg.timestamp);
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(msg);
-        return acc;
+    const groupedMessages = currentMessages.reduce((groups, message) => {
+        const date = formatDate(message.timestamp);
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(message);
+        return groups;
     }, {});
 
+    const activeProfile = activeConversation
+        ? freelancers.find((item) => item.id === activeConversation.participantId)
+        : null;
+
     return (
-        <div className="min-h-screen pt-24 pb-8 bg-bg-soft">
-            <SEOMeta title="Messages" description="Gerez vos conversations avec les freelances." />
+        <div className="min-h-screen bg-bg-soft pb-8 pt-24 sm:pt-28">
+            <SEOMeta title="Messages" description="Gérez vos conversations avec les freelances." noIndex />
 
             <div className="container">
-                <div className="bg-bg-main rounded-3xl border border-border shadow-sm overflow-hidden h-[calc(100vh-140px)] flex">
-                    <div className={`${activeConversation ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-96 border-r border-border`}>
-                        <div className="p-6 border-b border-border">
-                            <h1 className="text-2xl font-bold font-outfit mb-4">Messages</h1>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-soft" size={18} />
+                <div className="flex h-[calc(100vh-8.5rem)] overflow-hidden rounded-3xl border border-border bg-bg-main shadow-card">
+                    {/* Conversation list */}
+                    <div
+                        className={`${
+                            activeConversation ? 'hidden md:flex' : 'flex'
+                        } w-full flex-col border-r border-border md:w-80 lg:w-96`}
+                    >
+                        <div className="border-b border-border p-5">
+                            <h1 className="font-display text-xl font-bold">Messages</h1>
+                            <p className="mt-1 text-[11px] text-text-soft">
+                                Conversations de démonstration
+                            </p>
+                            <div className="relative mt-4">
+                                <label htmlFor="conversation-search" className="sr-only">
+                                    Rechercher une conversation
+                                </label>
+                                <Search
+                                    size={17}
+                                    aria-hidden="true"
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-soft"
+                                />
                                 <input
-                                    type="text"
-                                    placeholder="Rechercher une conversation..."
-                                    className="w-full pl-10 pr-4 py-3 bg-bg-soft border border-border rounded-xl text-sm focus:border-blue-500 outline-none"
+                                    id="conversation-search"
+                                    type="search"
+                                    placeholder="Rechercher une conversation…"
+                                    className="w-full rounded-xl border border-border bg-bg-soft py-2.5 pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                     value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onChange={(event) => setSearchTerm(event.target.value)}
                                 />
                             </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto">
-                            {filteredConversations.map((conv) => (
-                                <motion.button
-                                    key={conv.id}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    onClick={() => setActiveConversation(conv)}
-                                    className={`w-full p-4 flex items-center gap-4 hover:bg-bg-soft transition-colors text-left border-b border-border ${
-                                        activeConversation?.id === conv.id ? 'bg-bg-soft' : ''
+                            {filteredConversations.map((conversation) => (
+                                <button
+                                    key={conversation.id}
+                                    type="button"
+                                    onClick={() => setActiveConversation(conversation)}
+                                    className={`flex w-full items-center gap-3 border-b border-border p-4 text-left transition-colors hover:bg-bg-soft ${
+                                        activeConversation?.id === conversation.id ? 'bg-bg-soft' : ''
                                     }`}
                                 >
-                                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center shrink-0">
-                                        {conv.photo ? (
-                                            <img src={conv.photo} alt={conv.participantName} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <span className="bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center w-full h-full text-blue-600 font-bold">{conv.participantAvatar}</span>
-                                        )}
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 font-bold text-blue-700 dark:from-blue-950 dark:to-indigo-950 dark:text-blue-300">
+                                        {conversation.participantAvatar}
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="font-bold text-sm truncate">{conv.participantName}</span>
-                                            <span className="text-xs text-text-soft">{formatTime(conv.timestamp)}</span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="mb-0.5 flex items-center justify-between gap-2">
+                                            <span className="truncate text-sm font-bold">
+                                                {conversation.participantName}
+                                            </span>
+                                            <span className="shrink-0 text-[11px] text-text-soft">
+                                                {formatTime(conversation.timestamp)}
+                                            </span>
                                         </div>
-                                        <MessagePreview 
-                                            text={conv.lastMessage || 'Nouvelle conversation'} 
+                                        <MessagePreview
+                                            text={conversation.lastMessage || 'Nouvelle conversation'}
                                             maxWidth={200}
                                             maxLines={1}
                                         />
                                     </div>
-                                    {conv.unread > 0 && (
-                                        <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                            {conv.unread}
+                                    {conversation.unread > 0 && (
+                                        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">
+                                            {conversation.unread}
                                         </span>
                                     )}
-                                </motion.button>
+                                </button>
                             ))}
 
                             {filteredConversations.length === 0 && (
-                                <div className="p-8 text-center text-text-soft">
-                                    <p>Aucune conversation trouvee</p>
+                                <div className="p-8 text-center text-sm text-text-soft">
+                                    Aucune conversation trouvée.
                                 </div>
                             )}
                         </div>
                     </div>
 
+                    {/* Conversation view */}
                     {activeConversation ? (
-                        <div className="flex-1 flex flex-col">
-                            <div className="p-4 border-b border-border flex items-center justify-between bg-bg-main">
-                                <div className="flex items-center gap-4">
-                                    <button 
+                        <div className="flex min-w-0 flex-1 flex-col">
+                            <div className="flex items-center justify-between border-b border-border bg-bg-main p-4">
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <button
+                                        type="button"
                                         onClick={() => setActiveConversation(null)}
-                                        className="md:hidden p-2 hover:bg-bg-soft rounded-lg"
+                                        className="rounded-lg p-2 hover:bg-bg-soft md:hidden"
+                                        aria-label="Revenir aux conversations"
                                     >
-                                        <ArrowLeft size={20} />
+                                        <ArrowLeft size={19} aria-hidden="true" />
                                     </button>
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 font-bold text-blue-700 dark:from-blue-950 dark:to-indigo-950 dark:text-blue-300">
                                         {activeConversation.participantAvatar}
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold">{activeConversation.participantName}</h3>
-                                        <span className="text-xs text-green-500">En ligne</span>
+                                    <div className="min-w-0">
+                                        <h2 className="truncate text-sm font-bold">
+                                            {activeConversation.participantName}
+                                        </h2>
+                                        <span className="text-[11px] text-text-soft">
+                                            Conversation de démonstration
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <button className="p-2 hover:bg-bg-soft rounded-lg">
-                                        <Phone size={20} className="text-text-soft" />
-                                    </button>
-                                    <button className="p-2 hover:bg-bg-soft rounded-lg">
-                                        <Video size={20} className="text-text-soft" />
-                                    </button>
-                                    <button className="p-2 hover:bg-bg-soft rounded-lg">
-                                        <MoreVertical size={20} className="text-text-soft" />
-                                    </button>
-                                </div>
+                                {activeProfile && (
+                                    <Link
+                                        to={`/profile/${activeProfile.id}`}
+                                        className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-semibold text-text-soft transition-colors hover:border-blue-300 hover:text-blue-700"
+                                    >
+                                        <ExternalLink size={14} aria-hidden="true" />
+                                        Profil
+                                    </Link>
+                                )}
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                {Object.entries(groupedMessages).map(([date, msgs]) => (
+                            <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-6" aria-live="polite">
+                                {Object.entries(groupedMessages).map(([date, messages]) => (
                                     <div key={date}>
-                                        <div className="flex justify-center mb-4">
-                                            <span className="text-xs text-text-soft bg-bg-soft px-3 py-1 rounded-full">{date}</span>
+                                        <div className="mb-4 flex justify-center">
+                                            <span className="rounded-full bg-bg-soft px-3 py-1 text-[11px] text-text-soft">
+                                                {date}
+                                            </span>
                                         </div>
-                                        {msgs.map((msg) => (
+                                        {messages.map((message) => (
                                             <motion.div
-                                                key={msg.id}
-                                                initial={{ opacity: 0, y: 10 }}
+                                                key={message.id}
+                                                initial={{ opacity: 0, y: 8 }}
                                                 animate={{ opacity: 1, y: 0 }}
-                                                className={`flex mb-4 ${msg.senderId === 'user' ? 'justify-end' : 'justify-start'}`}
+                                                className={`mb-3 flex ${
+                                                    message.senderId === 'user'
+                                                        ? 'justify-end'
+                                                        : 'justify-start'
+                                                }`}
                                             >
-                                                <MessageBubble 
-                                                    text={msg.text}
-                                                    isUser={msg.senderId === 'user'}
-                                                    timestamp={msg.timestamp}
+                                                <MessageBubble
+                                                    text={message.text}
+                                                    isUser={message.senderId === 'user'}
+                                                    timestamp={message.timestamp}
                                                     maxWidth={280}
-                                                    className={msg.senderId === 'user' ? 'order-2' : 'order-1'}
                                                 />
                                             </motion.div>
                                         ))}
                                     </div>
                                 ))}
+                                {currentMessages.length === 0 && (
+                                    <p className="text-center text-sm text-text-soft">
+                                        Aucun message. Écrivez le premier.
+                                    </p>
+                                )}
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            <form onSubmit={handleSend} className="p-4 border-t border-border bg-bg-main">
-                                <div className="flex items-center gap-3">
+                            <form
+                                onSubmit={handleSend}
+                                className="border-t border-border bg-bg-main p-4"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <label htmlFor="message-input" className="sr-only">
+                                        Votre message
+                                    </label>
                                     <input
+                                        id="message-input"
                                         type="text"
-                                        placeholder="Tapez votre message..."
-                                        className="flex-1 px-5 py-3 bg-bg-soft border border-border rounded-full focus:border-blue-500 outline-none"
+                                        placeholder="Tapez votre message…"
+                                        className="flex-1 rounded-full border border-border bg-bg-soft px-5 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                         value={messageText}
-                                        onChange={(e) => setMessageText(e.target.value)}
+                                        onChange={(event) => setMessageText(event.target.value)}
                                     />
                                     <button
                                         type="submit"
                                         disabled={!messageText.trim()}
-                                        className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        className="rounded-full bg-blue-600 p-3 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        aria-label="Envoyer le message"
                                     >
-                                        <Send size={20} />
+                                        <Send size={18} aria-hidden="true" />
                                     </button>
                                 </div>
                             </form>
                         </div>
                     ) : (
-                        <div className="hidden md:flex flex-1 items-center justify-center">
+                        <div className="hidden flex-1 items-center justify-center md:flex">
                             <div className="text-center">
-                                <div className="w-20 h-20 bg-bg-soft rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Send size={32} className="text-text-soft" />
+                                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bg-soft">
+                                    <MessageSquare size={28} className="text-text-soft" aria-hidden="true" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">Vos Messages</h3>
-                                <p className="text-text-soft text-sm">Selectionnez une conversation pour commencer a discuter</p>
+                                <h2 className="font-display text-lg font-bold">Vos messages</h2>
+                                <p className="mt-1 max-w-xs text-sm text-text-soft">
+                                    Sélectionnez une conversation ou contactez un talent depuis son profil.
+                                </p>
                             </div>
                         </div>
                     )}

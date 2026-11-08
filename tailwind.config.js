@@ -1,8 +1,48 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        'bg-main': 'var(--bg-main)',
+        'bg-soft': 'var(--bg-soft)',
+        'text-main': 'var(--text-main)',
+        'text-soft': 'var(--text-soft)',
+        border: 'var(--border)',
+        'dark-surface': 'var(--dark-surface)',
+        brand: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        outfit: ['Outfit', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      container: {
+        center: true,
+        padding: '1.5rem',
+        screens: {
+          sm: '640px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1200px',
+          '2xl': '1200px',
+        },
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -65,6 +105,8 @@ export default {
       boxShadow: {
         'glow-blue': '0 0 20px rgba(37, 99, 235, 0.4)',
         'glow-lg': '0 0 40px rgba(37, 99, 235, 0.6)',
+        card: '0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -16px rgba(15, 23, 42, 0.12)',
+        'card-hover': '0 2px 4px rgba(15, 23, 42, 0.04), 0 24px 48px -20px rgba(15, 23, 42, 0.22)',
       },
     },
   },

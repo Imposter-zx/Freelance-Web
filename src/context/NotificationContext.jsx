@@ -7,18 +7,11 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-        if (savedNotifications.length === 0) {
-            // Initial mock notifications
-            const initial = [
-                { id: 1, title: 'Bienvenue !', message: 'Merci de rejoindre ZORD Freelance.', time: 'Il y a 2 jours', read: true, type: 'info' },
-                { id: 2, title: 'Profil validé', message: 'Votre profil a été vérifié avec succès.', time: 'Il y a 1 jour', read: true, type: 'success' },
-                { id: 3, title: 'Message non lu', message: 'Vous avez un nouveau message de test.', time: 'Il y a 2h', read: false, type: 'message' },
-            ];
-            setNotifications(initial);
-            localStorage.setItem('notifications', JSON.stringify(initial));
-        } else {
-            setNotifications(savedNotifications);
+        try {
+            const savedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            setNotifications(Array.isArray(savedNotifications) ? savedNotifications : []);
+        } catch {
+            setNotifications([]);
         }
     }, []);
 

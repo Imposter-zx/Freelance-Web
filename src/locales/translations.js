@@ -52,7 +52,7 @@ export const translations = {
       badge: '✨ Propulsé par l\'IA et les Talents Humains',
       title: 'Donnez Vie à Vos Idées avec les',
       titleHighlight: 'Meilleurs Freelances',
-      subtitle: 'ZORD connecte les entreprises avec des experts du digital pour créer des produits exceptionnels. Qualité garantie, délais respectés.',
+      subtitle: 'ZORD connecte les entreprises avec des experts du digital pour créer des produits exceptionnels. Une collaboration claire, du brief à la livraison.',
       cta1: 'Trouver un expert',
       cta2: 'Devenir Freelance'
     },
@@ -99,8 +99,10 @@ export const translations = {
 
     // Search page
     search: {
+      pageTitle: 'Trouver un freelance',
+      pageDescription: 'Parcourez des profils de freelances détaillés et trouvez l\'expert adapté à votre projet.',
       title: 'Trouvez l\'expert idéal',
-      subtitle: 'Accédez à un réseau de freelances vérifiés et passionnés.',
+      subtitle: 'Accédez à des profils de freelances aux compétences variées.',
       searchPlaceholder: 'Rechercher par nom, compétence ou mot clé...',
       filters: 'Filtres',
       advancedFilters: 'Filtres avancés',
@@ -112,6 +114,10 @@ export const translations = {
       highestRating: 'Note la plus haute',
       lowestPrice: 'Prix croissant',
       moreExperience: 'Plus d\'expérience',
+      mostExperience: 'Plus d\'expérience',
+      results: 'freelances trouvés',
+      all: 'Tous',
+      hireBtn: 'Engager ce profil',
       freelancesFound: 'freelance trouvé',
       freelancesFoundPlural: 'freelances trouvés',
       hireProfile: 'Engager ce profil',
@@ -153,7 +159,7 @@ export const translations = {
       badge: '✨ Powered by AI and Human Talent',
       title: 'Bring Your Ideas to Life with the',
       titleHighlight: 'Best Freelancers',
-      subtitle: 'ZORD connects businesses with digital experts to create exceptional products. Quality guaranteed, deadlines met.',
+      subtitle: 'ZORD connects businesses with digital experts to create exceptional products. A clear collaboration, from brief to delivery.',
       cta1: 'Find an Expert',
       cta2: 'Become a Freelancer'
     },
@@ -200,8 +206,10 @@ export const translations = {
 
     // Search page
     search: {
+      pageTitle: 'Find a Freelancer',
+      pageDescription: 'Browse detailed freelancer profiles and find the right expert for your project.',
       title: 'Find the Perfect Expert',
-      subtitle: 'Access a network of verified and passionate freelancers.',
+      subtitle: 'Access freelancer profiles with a wide range of skills.',
       searchPlaceholder: 'Search by name, skill, or keyword...',
       filters: 'Filters',
       advancedFilters: 'Advanced Filters',
@@ -213,6 +221,10 @@ export const translations = {
       highestRating: 'Highest Rating',
       lowestPrice: 'Lowest Price',
       moreExperience: 'Most Experience',
+      mostExperience: 'Most Experience',
+      results: 'freelancers found',
+      all: 'All',
+      hireBtn: 'Hire this freelancer',
       freelancesFound: 'freelancer found',
       freelancesFoundPlural: 'freelancers found',
       hireProfile: 'Hire This Profile',
@@ -251,7 +263,7 @@ export const translations = {
       badge: '✨ Impulsado por IA y Talento Humano',
       title: 'Haz Realidad Tus Ideas con los',
       titleHighlight: 'Mejores Freelancers',
-      subtitle: 'ZORD conecta empresas con expertos digitales para crear productos excepcionales. Calidad garantizada, plazos cumplidos.',
+      subtitle: 'ZORD conecta empresas con expertos digitales para crear productos excepcionales. Una colaboración clara, del brief a la entrega.',
       cta1: 'Encontrar un Experto',
       cta2: 'Ser un Freelancer'
     },
@@ -279,8 +291,10 @@ export const translations = {
       cta2: 'Contactarnos'
     },
     search: {
+      pageTitle: 'Encontrar un freelancer',
+      pageDescription: 'Explora perfiles detallados y encuentra el experto adecuado para tu proyecto.',
       title: 'Encuentra el Experto Perfecto',
-      subtitle: 'Accede a una red de freelancers verificados y apasionados.',
+      subtitle: 'Accede a perfiles de freelancers con habilidades variadas.',
       searchPlaceholder: 'Buscar por nombre, habilidad o palabra clave...',
       filters: 'Filtros',
       advancedFilters: 'Filtros Avanzados',
@@ -292,6 +306,10 @@ export const translations = {
       highestRating: 'Calificación Más Alta',
       lowestPrice: 'Precio Más Bajo',
       moreExperience: 'Más Experiencia',
+      mostExperience: 'Más Experiencia',
+      results: 'freelancers encontrados',
+      all: 'Todos',
+      hireBtn: 'Contratar este perfil',
       freelancesFound: 'freelancer encontrado',
       freelancesFoundPlural: 'freelancers encontrados',
       hireProfile: 'Contratar Este Perfil',
@@ -328,7 +346,7 @@ export const translations = {
       badge: '✨ Angetrieben durch KI und menschliches Talent',
       title: 'Verwirkliche deine Ideen mit den',
       titleHighlight: 'Besten Freelancern',
-      subtitle: 'ZORD verbindet Unternehmen mit digitalen Experten, um außergewöhnliche Produkte zu schaffen. Qualität garantiert, Fristen eingehalten.',
+      subtitle: 'ZORD verbindet Unternehmen mit digitalen Experten, um außergewöhnliche Produkte zu schaffen. Eine klare Zusammenarbeit vom Briefing bis zur Lieferung.',
       cta1: 'Finde einen Experten',
       cta2: 'Werde Freelancer'
     },
@@ -356,6 +374,8 @@ export const translations = {
       cta2: 'Kontaktiere uns'
     },
     search: {
+      pageTitle: 'Freelancer finden',
+      pageDescription: 'Durchsuche detaillierte Profile und finde den passenden Experten für dein Projekt.',
       title: 'Finde den perfekten Experten',
       subtitle: 'Greife auf ein Netzwerk überprüfter und leidenschaftlicher Freiberufler zu.',
       searchPlaceholder: 'Nach Name, Fertigkeit oder Stichwort suchen...',
@@ -369,6 +389,10 @@ export const translations = {
       highestRating: 'Höchste Bewertung',
       lowestPrice: 'Niedrigster Preis',
       moreExperience: 'Mehr Erfahrung',
+      mostExperience: 'Meiste Erfahrung',
+      results: 'Freiberufler gefunden',
+      all: 'Alle',
+      hireBtn: 'Dieses Profil engagieren',
       freelancesFound: 'Freiberufler gefunden',
       freelancesFoundPlural: 'Freiberufler gefunden',
       hireProfile: 'Dieses Profil mieten',
@@ -405,7 +429,7 @@ export const translations = {
       badge: '✨ Alimentato da IA e Talento Umano',
       title: 'Dai Vita alle Tue Idee con i',
       titleHighlight: 'Migliori Freelancer',
-      subtitle: 'ZORD connette le aziende con esperti digitali per creare prodotti straordinari. Qualità garantita, scadenze rispettate.',
+      subtitle: 'ZORD connette le aziende con esperti digitali per creare prodotti straordinari. Una collaborazione chiara, dal brief alla consegna.',
       cta1: 'Trova un Esperto',
       cta2: 'Diventa un Freelancer'
     },
@@ -433,8 +457,10 @@ export const translations = {
       cta2: 'Contattaci'
     },
     search: {
+      pageTitle: 'Trova un freelancer',
+      pageDescription: 'Esplora profili dettagliati e trova l\'esperto adatto al tuo progetto.',
       title: 'Trova l\'Esperto Perfetto',
-      subtitle: 'Accedi a una rete di freelancer verificati e appassionati.',
+      subtitle: 'Accedi a profili di freelancer con competenze varie.',
       searchPlaceholder: 'Cerca per nome, competenza o parola chiave...',
       filters: 'Filtri',
       advancedFilters: 'Filtri Avanzati',
@@ -446,6 +472,10 @@ export const translations = {
       highestRating: 'Valutazione Più Alta',
       lowestPrice: 'Prezzo Più Basso',
       moreExperience: 'Più Esperienza',
+      mostExperience: 'Più esperienza',
+      results: 'freelancer trovati',
+      all: 'Tutti',
+      hireBtn: 'Assumi questo profilo',
       freelancesFound: 'freelancer trovato',
       freelancesFoundPlural: 'freelancer trovati',
       hireProfile: 'Assumi Questo Profilo',

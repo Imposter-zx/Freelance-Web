@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://imposter-zx.github.io/Freelance-Web/sitemap.xml

@@ -1,4 +1,4 @@
-import { pool } from '../../server.js';
+import { pool } from './pool.js';
 
 // Initialize database schema
 export const initializeDatabase = async () => {
@@ -112,6 +112,36 @@ export const initializeDatabase = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+
+    // Indexes and safety constraints
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS bids_project_freelancer_unique
+      ON bids (project_id, freelancer_id)
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS projects_status_created_idx
+      ON projects (status, created_at DESC)
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS conversations_participant1_idx
+      ON conversations (participant1_id, last_message_at DESC)
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS conversations_participant2_idx
+      ON conversations (participant2_id, last_message_at DESC)
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS messages_conversation_created_idx
+      ON messages (conversation_id, created_at DESC)
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS reviews_freelancer_idx
+      ON reviews (freelancer_id, created_at DESC)
+    `);
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS transactions_stripe_payment_unique
+      ON transactions (stripe_payment_id)
     `);
 
     client.release();

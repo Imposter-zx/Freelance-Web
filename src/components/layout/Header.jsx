@@ -12,7 +12,9 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(
+        () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+    );
     const { user, logout } = useAuth();
     const { unreadCount: unreadMessages } = useMessages();
     const { notifications, unreadCount: unreadNotifs, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
@@ -33,22 +35,22 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        if (localStorage.getItem('theme') === 'dark') {
-            setIsDarkMode(true);
-            document.body.classList.add('dark-mode');
-        }
-    }, []);
+        setIsMobileMenuOpen(false);
+        setIsNotificationsOpen(false);
+    }, [location.pathname]);
 
     const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
+        const nextMode = !isDarkMode;
+        setIsDarkMode(nextMode);
+        document.documentElement.classList.toggle('dark', nextMode);
+        document.body.classList.toggle('dark-mode', nextMode);
+        localStorage.setItem('theme', nextMode ? 'dark' : 'light');
     };
 
     const navLinks = [
         { name: t('nav.services'), href: '/#services' },
-        { name: t('nav.portfolio'), href: '/#portfolio' },
         { name: t('nav.search'), href: '/search' },
+        { name: t('nav.postProject'), href: '/post-project' },
     ];
 
     const getIcon = (type) => {
@@ -74,10 +76,10 @@ const Header = () => {
                     </Link>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-8">
+                <nav className="hidden lg:flex items-center gap-8" aria-label="Navigation principale">
                     {navLinks.map((link) => (
                         <motion.div key={link.name} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Link to={link.href} className="text-sm font-medium hover:text-blue-600 transition-colors">
+                            <Link to={link.href} className="text-sm font-medium hover:text-blue-600 transition-colors" aria-current={link.href === location.pathname ? 'page' : undefined}>
                                 {link.name}
                             </Link>
                         </motion.div>
@@ -87,8 +89,11 @@ const Header = () => {
                         <LanguageSelector />
                         
                         <motion.button 
+                            type="button"
                             onClick={toggleTheme} 
                             className="p-2 rounded-full hover:bg-bg-soft transition-colors text-text-main"
+                            aria-label={isDarkMode ? 'Activer le thème clair' : 'Activer le thème sombre'}
+                            aria-pressed={isDarkMode}
                             whileHover={{ rotate: 20, scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                         >
@@ -100,8 +105,12 @@ const Header = () => {
                                 {/* Notifications */}
                                 <div className="relative">
                                     <motion.button 
+                                        type="button"
                                         onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
                                         className={`p-2 rounded-full hover:bg-bg-soft transition-colors ${isNotificationsOpen ? 'bg-bg-soft text-blue-600' : 'text-text-main'}`}
+                                        aria-label={`${t('nav.notifications')}${unreadNotifs > 0 ? ` (${unreadNotifs} non lues)` : ''}`}
+                                        aria-expanded={isNotificationsOpen}
+                                        aria-controls="notifications-panel"
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.9 }}
                                     >
@@ -120,14 +129,16 @@ const Header = () => {
                                     <AnimatePresence>
                                         {isNotificationsOpen && (
                                             <motion.div
+                                                id="notifications-panel"
                                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute right-0 mt-2 w-80 bg-bg-main border border-border rounded-2xl shadow-xl overflow-hidden z-50"
+                                                className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-bg-main border border-border rounded-2xl shadow-xl overflow-hidden z-50"
                                             >
                                                 <div className="p-4 border-b border-border flex justify-between items-center bg-bg-soft/50">
                                                     <h3 className="font-bold text-sm">{t('nav.notifications')}</h3>
                                                     <motion.button 
+                                                        type="button"
                                                         onClick={markAllAsRead} 
                                                         className="text-[10px] text-blue-600 font-bold hover:underline"
                                                         whileHover={{ scale: 1.1 }}
@@ -146,15 +157,21 @@ const Header = () => {
                                                                 transition={{ delay: idx * 0.05 }}
                                                             >
                                                                 <div className="mt-1 shrink-0">{getIcon(n.type)}</div>
-                                                                <div className="flex-1 cursor-pointer" onClick={() => markAsRead(n.id)}>
+                                                                <button
+                                                                    type="button"
+                                                                    className="flex-1 text-left"
+                                                                    onClick={() => markAsRead(n.id)}
+                                                                >
                                                                     <p className={`text-sm ${!n.read ? 'font-bold' : 'text-text-main'}`}>{n.title}</p>
                                                                     <p className="text-xs text-text-soft line-clamp-2 mt-0.5">{n.message}</p>
                                                                     <span className="text-[10px] text-text-soft mt-2 block italic">{n.time}</span>
-                                                                </div>
+                                                                </button>
                                                                 <motion.button 
+                                                                    type="button"
                                                                     onClick={(e) => { e.stopPropagation(); deleteNotification(n.id); }}
-                                                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-50 hover:text-red-500 rounded-md transition-all text-text-soft"
+                                                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-1.5 hover:bg-red-50 hover:text-red-500 rounded-md transition-all text-text-soft"
                                                                     whileHover={{ scale: 1.2, rotate: 90 }}
+                                                                    aria-label={`Supprimer la notification ${n.title}`}
                                                                 >
                                                                     <Trash2 size={12} />
                                                                 </motion.button>
@@ -174,8 +191,8 @@ const Header = () => {
 
                                 {/* Messages */}
                                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                                    <Link to="/messages" className="relative p-2 rounded-full hover:bg-bg-soft transition-colors text-text-main">
-                                        <MessageSquare size={20} />
+                                    <Link to="/messages" className="relative p-2 rounded-full hover:bg-bg-soft transition-colors text-text-main" aria-label={`${t('nav.messages')}${unreadMessages > 0 ? ` (${unreadMessages} non lus)` : ''}`}>
+                                        <MessageSquare size={20} aria-hidden="true" />
                                         {unreadMessages > 0 && (
                                             <motion.span 
                                                 className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-bg-main"
@@ -190,8 +207,8 @@ const Header = () => {
 
                                 {/* Post Project */}
                                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                                    <Link to="/post-project" className="p-2 rounded-full hover:bg-bg-soft transition-colors text-text-main" title={t('nav.postProject')}>
-                                        <PlusCircle size={20} />
+                                    <Link to="/post-project" className="p-2 rounded-full hover:bg-bg-soft transition-colors text-text-main" title={t('nav.postProject')} aria-label={t('nav.postProject')}>
+                                        <PlusCircle size={20} aria-hidden="true" />
                                     </Link>
                                 </motion.div>
 
@@ -205,6 +222,7 @@ const Header = () => {
 
                                 {/* Logout */}
                                 <motion.button 
+                                    type="button"
                                     onClick={logout} 
                                     className="btn bg-red-50 text-red-600 hover:bg-red-100 py-2 px-4 text-xs font-bold"
                                     whileHover={{ scale: 1.05 }}
@@ -227,23 +245,30 @@ const Header = () => {
                 </nav>
 
                 {/* Mobile Menu Toggle */}
-                <div className="flex items-center gap-4 md:hidden">
+                <div className="flex items-center gap-3 lg:hidden">
                     <LanguageSelector />
                     <motion.button 
+                        type="button"
                         onClick={toggleTheme} 
                         className="p-2 rounded-full hover:bg-bg-soft"
+                        aria-label={isDarkMode ? 'Activer le thème clair' : 'Activer le thème sombre'}
+                        aria-pressed={isDarkMode}
                         whileHover={{ rotate: 20, scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                     >
-                        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                        {isDarkMode ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
                     </motion.button>
                     <motion.button 
+                        type="button"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                         className="p-2"
+                        aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+                        aria-expanded={isMobileMenuOpen}
+                        aria-controls="mobile-menu"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                     >
-                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {isMobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
                     </motion.button>
                 </div>
             </div>
@@ -252,10 +277,11 @@ const Header = () => {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
+                        id="mobile-menu"
                         initial={{ opacity: 0, y: -20, height: 0 }}
                         animate={{ opacity: 1, y: 0, height: 'auto' }}
                         exit={{ opacity: 0, y: -20, height: 0 }}
-                        className="absolute top-full left-0 w-full bg-bg-main border-b border-border p-6 flex flex-col gap-4 md:hidden shadow-lg"
+                        className="absolute top-full left-0 w-full max-h-[calc(100vh-5rem)] overflow-y-auto bg-bg-main border-b border-border p-6 flex flex-col gap-4 lg:hidden shadow-lg"
                     >
                         {navLinks.map((link, idx) => (
                             <motion.div

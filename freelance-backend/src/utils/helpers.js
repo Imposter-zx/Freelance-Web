@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const SALT_ROUNDS = 10;
 
@@ -11,7 +12,7 @@ export const comparePasswords = async (password, hash) => {
 };
 
 export const generateRandomString = (length = 32) => {
-  return Math.random().toString(36).substring(2, 2 + length);
+  return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
 };
 
 export const validateEmail = (email) => {
@@ -20,7 +21,8 @@ export const validateEmail = (email) => {
 };
 
 export const validatePassword = (password) => {
-  // At least 8 chars, 1 uppercase, 1 lowercase, 1 digit
+  // At least 8 chars, 1 uppercase, 1 lowercase, 1 digit; keep within bcrypt's usable range.
+  if (typeof password !== 'string' || password.length > 128) return false;
   const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
   return re.test(password);
 };

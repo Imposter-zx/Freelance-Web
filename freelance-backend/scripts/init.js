@@ -1,7 +1,8 @@
-import { pool } from '../server.js';
-import { initializeDatabase } from './src/db/schema.js';
+import { pool } from '../src/db/pool.js';
+import { initializeDatabase } from '../src/db/schema.js';
+import { hashPassword } from '../src/utils/helpers.js';
 
-// Initialize database schema and seed data
+// Initialize database schema and seed demo data.
 const initialize = async () => {
   try {
     console.log('🗄️  Initializing database...');
@@ -14,24 +15,23 @@ const initialize = async () => {
 
     console.log('✅ Database initialized successfully');
 
-    // Seed sample data
     await seedSampleData();
 
     await pool.end();
     process.exit(0);
   } catch (error) {
     console.error('Initialization error:', error);
+    await pool.end();
     process.exit(1);
   }
 };
 
 async function seedSampleData() {
   try {
-    console.log('🌱 Seeding sample data...');
-    
+    console.log('🌱 Seeding demo data...');
     const client = await pool.connect();
+    const passwordHash = await hashPassword('Demo1234');
 
-    // Sample users
     const users = [
       {
         email: 'jean@example.com',
@@ -49,35 +49,38 @@ async function seedSampleData() {
       },
       {
         email: 'client@example.com',
-        name: 'Client User',
+        name: 'Client Demo',
         role: 'client',
       },
     ];
 
-    for (const user of users) {
-      const checkResult = await client.query(
-        'SELECT id FROM users WHERE email = $1',
-        [user.email]
-      );
+    try {
+      for (const user of users) {
+        const checkResult = await client.query('SELECT id FROM users WHERE email = $1', [
+          user.email,
+        ]);
 
-      if (checkResult.rows.length === 0) {
-        await client.query(
-          `INSERT INTO users (email, password, name, role, hourly_rate, skills)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [
-            user.email,
-            '$2a$10$placeholder', // Placeholder, should be hashed in real scenario
-            user.name,
-            user.role,
-            user.hourly_rate || null,
-            user.skills ? `{${user.skills.join(',')}}` : null,
-          ]
-        );
+        if (checkResult.rows.length === 0) {
+          await client.query(
+            `INSERT INTO users (email, password, name, role, hourly_rate, skills)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [
+              user.email,
+              passwordHash,
+              user.name,
+              user.role,
+              user.hourly_rate || null,
+              user.skills || null,
+            ]
+          );
+        }
       }
+    } finally {
+      client.release();
     }
 
-    console.log('✅ Sample data seeded successfully');
-    client.release();
+    console.log('✅ Demo data seeded successfully');
+    console.log('   Demo password for seeded accounts: Demo1234');
   } catch (error) {
     console.error('Seeding error:', error);
   }

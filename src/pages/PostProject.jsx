@@ -2,61 +2,137 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import SEOMeta from '../components/common/SEOMeta';
-import { FileText, Tag, Clock, X, CheckCircle, Upload } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { FileText, Tag, Clock, X, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+
+const categories = [
+    { id: 'dev-web', label: 'Développement Web' },
+    { id: 'dev-mobile', label: 'Développement Mobile' },
+    { id: 'design', label: 'Design & Graphisme' },
+    { id: 'seo', label: 'SEO & Marketing' },
+    { id: 'data', label: 'Data Science' },
+];
+
+const durations = [
+    { id: 'less-1', label: 'Moins de 1 mois' },
+    { id: '1-3', label: '1 à 3 mois' },
+    { id: '3-6', label: '3 à 6 mois' },
+    { id: 'more-6', label: 'Plus de 6 mois' },
+];
+
+const experienceLevels = [
+    { id: 'entry', label: 'Débutant' },
+    { id: 'intermediate', label: 'Intermédiaire' },
+    { id: 'expert', label: 'Expert' },
+];
+
+const initialForm = {
+    title: '',
+    category: '',
+    description: '',
+    skills: [],
+    budgetMin: '',
+    budgetMax: '',
+    duration: '',
+    experienceLevel: '',
+};
 
 const PostProject = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [submitted, setSubmitted] = useState(false);
-    const [formData, setFormData] = useState({ 
-        title: '', category: '', description: '', skills: [], 
-        budgetMin: '', budgetMax: '', duration: '', experienceLevel: '' 
-    });
+    const [error, setError] = useState('');
+    const [formData, setFormData] = useState(initialForm);
     const [skillInput, setSkillInput] = useState('');
 
-    const categories = [
-        { id: 'dev-web', label: 'Developpement Web' },
-        { id: 'dev-mobile', label: 'Developpement Mobile' },
-        { id: 'design', label: 'Design & Graphisme' },
-        { id: 'seo', label: 'SEO & Marketing' },
-        { id: 'data', label: 'Data Science' }
-    ];
-
-    const durations = [
-        { id: 'less-1', label: 'Moins de 1 mois' },
-        { id: '1-3', label: '1 a 3 mois' },
-        { id: '3-6', label: '3 a 6 mois' },
-        { id: 'more-6', label: 'Plus de 6 mois' }
-    ];
-
-    const experienceLevels = [
-        { id: 'entry', label: 'Debutant' },
-        { id: 'intermediate', label: 'Intermediaire' },
-        { id: 'expert', label: 'Expert' }
-    ];
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((current) => ({ ...current, [name]: value }));
+        if (error) setError('');
     };
 
     const handleAddSkill = () => {
-        if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
-            setFormData(prev => ({ ...prev, skills: [...prev.skills, skillInput.trim()] }));
-            setSkillInput('');
+        const skill = skillInput.trim();
+        if (!skill) return;
+        if (formData.skills.some((item) => item.toLowerCase() === skill.toLowerCase())) {
+            setError('Cette compétence est déjà ajoutée.');
+            return;
         }
+        setFormData((current) => ({ ...current, skills: [...current.skills, skill] }));
+        setSkillInput('');
+        setError('');
     };
 
     const handleRemoveSkill = (skill) => {
-        setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+        setFormData((current) => ({
+            ...current,
+            skills: current.skills.filter((item) => item !== skill),
+        }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const validateStep = (targetStep) => {
+        if (targetStep === 1) {
+            if (formData.title.trim().length < 8) return 'Le titre doit contenir au moins 8 caractères.';
+            if (!formData.category) return 'Sélectionnez une catégorie.';
+            if (formData.description.trim().length < 30) {
+                return 'La description doit contenir au moins 30 caractères.';
+            }
+        }
+        if (targetStep === 2) {
+            if (formData.skills.length === 0) return 'Ajoutez au moins une compétence.';
+            const min = Number(formData.budgetMin);
+            const max = Number(formData.budgetMax);
+            if (!min || min <= 0) return 'Indiquez un budget minimum valide.';
+            if (!max || max <= 0) return 'Indiquez un budget maximum valide.';
+            if (min > max) return 'Le budget minimum ne peut pas dépasser le maximum.';
+        }
+        if (targetStep === 3) {
+            if (!formData.duration) return 'Sélectionnez une durée estimée.';
+            if (!formData.experienceLevel) return 'Sélectionnez un niveau d’expérience.';
+        }
+        return '';
+    };
+
+    const goNext = () => {
+        const validationError = validateStep(step);
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+        setError('');
+        setStep((current) => Math.min(current + 1, 3));
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        for (let currentStep = 1; currentStep <= 3; currentStep += 1) {
+            const validationError = validateStep(currentStep);
+            if (validationError) {
+                setStep(currentStep);
+                setError(validationError);
+                return;
+            }
+        }
+
         const projects = JSON.parse(localStorage.getItem('postedProjects') || '[]');
-        const newProject = { 
-            id: Date.now(), ...formData, status: 'open', 
-            proposals: 0, createdAt: new Date().toISOString() 
+        const newProject = {
+            id: Date.now(),
+            title: formData.title.trim(),
+            category: categories.find((item) => item.id === formData.category)?.label || formData.category,
+            description: formData.description.trim(),
+            skills: formData.skills,
+            budgetMin: Number(formData.budgetMin),
+            budgetMax: Number(formData.budgetMax),
+            duration: durations.find((item) => item.id === formData.duration)?.label || formData.duration,
+            experienceLevel:
+                experienceLevels.find((item) => item.id === formData.experienceLevel)?.label ||
+                formData.experienceLevel,
+            client: user?.name || 'Client',
+            clientEmail: user?.email || '',
+            status: 'open',
+            proposals: 0,
+            createdAt: new Date().toISOString(),
         };
         projects.unshift(newProject);
         localStorage.setItem('postedProjects', JSON.stringify(projects));
@@ -65,162 +141,356 @@ const PostProject = () => {
 
     if (submitted) {
         return (
-            <div className="min-h-screen pt-32 pb-20 bg-bg-soft">
-                <SEOMeta title="Projet Publie" description="Votre projet a ete publie." />
+            <div className="min-h-screen bg-bg-soft pb-20 pt-32">
+                <SEOMeta title="Projet publié" description="Votre projet a été publié." noIndex />
                 <div className="container max-w-2xl">
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                        className="bg-bg-main rounded-3xl border border-border p-12 text-center shadow-sm">
-                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle size={40} className="text-green-600" />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="rounded-3xl border border-border bg-bg-main p-8 text-center shadow-card sm:p-12"
+                    >
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40">
+                            <CheckCircle size={34} aria-hidden="true" />
                         </div>
-                        <h1 className="text-3xl font-bold font-outfit mb-4">Projet Publie !</h1>
-                        <p className="text-text-soft mb-8">Votre projet a ete publie avec succes.</p>
-                        <button onClick={() => navigate('/dashboard')} className="btn btn-primary">Retour au Dashboard</button>
+                        <h1 className="mt-5 font-display text-2xl font-bold text-text-main">
+                            Projet publié
+                        </h1>
+                        <p className="mt-2 text-sm text-text-soft">
+                            Votre brief est enregistré. Retrouvez-le dans votre tableau de bord et suivez les
+                            propositions reçues.
+                        </p>
+                        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/dashboard')}
+                                className="btn btn-primary"
+                            >
+                                Retour au tableau de bord
+                                <ArrowRight size={16} aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setFormData(initialForm);
+                                    setStep(1);
+                                    setSubmitted(false);
+                                }}
+                                className="btn btn-secondary"
+                            >
+                                Publier un autre projet
+                            </button>
+                        </div>
+                        <p className="mt-6 text-[11px] text-text-soft">
+                            Version démonstration : le projet est stocké dans ce navigateur.
+                        </p>
                     </motion.div>
                 </div>
             </div>
         );
     }
 
+    const stepLabels = ['Informations', 'Compétences & budget', 'Détails'];
+
     return (
-        <div className="min-h-screen pt-32 pb-20 bg-bg-soft">
-            <SEOMeta title="Publier un Projet" description="Decrivez votre projet." />
-            <div className="container">
-                <div className="max-w-4xl mx-auto">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h1 className="text-4xl font-bold font-outfit mb-2">Publier un Projet</h1>
-                        <p className="text-text-soft mb-8">Decrivez votre projet pour trouver le freelance ideal</p>
-                        
-                        <div className="flex items-center gap-2 mb-8">
-                            {[1, 2, 3].map(s => (
-                                <React.Fragment key={s}>
-                                    <button onClick={() => setStep(s)}
-                                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
-                                            step >= s ? 'bg-blue-600 text-white' : 'bg-bg-main border border-border text-text-soft'
-                                        }`}>
-                                        {s}
+        <div className="min-h-screen bg-bg-soft pb-20 pt-28 sm:pt-32">
+            <SEOMeta title="Publier un projet" description="Décrivez votre projet et trouvez le freelance idéal." noIndex />
+            <div className="container max-w-3xl">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <h1 className="font-display text-2xl font-bold text-text-main sm:text-3xl">
+                        Publier un projet
+                    </h1>
+                    <p className="mt-2 text-sm text-text-soft">
+                        Un brief clair attire les meilleurs profils. Trois étapes suffisent.
+                    </p>
+
+                    {/* Progress */}
+                    <ol className="mt-8 flex items-center gap-2" aria-label="Étapes du formulaire">
+                        {stepLabels.map((label, index) => {
+                            const number = index + 1;
+                            const active = step === number;
+                            const complete = step > number;
+                            return (
+                                <li key={label} className="flex flex-1 items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (number < step) {
+                                                setStep(number);
+                                                setError('');
+                                            }
+                                        }}
+                                        disabled={number >= step}
+                                        aria-current={active ? 'step' : undefined}
+                                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                                            complete
+                                                ? 'bg-blue-600 text-white'
+                                                : active
+                                                  ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-600 dark:bg-blue-950/60 dark:text-blue-300'
+                                                  : 'border border-border bg-bg-main text-text-soft'
+                                        }`}
+                                    >
+                                        {complete ? <CheckCircle size={15} aria-hidden="true" /> : number}
                                     </button>
-                                    {s < 3 && <div className={`flex-1 h-1 rounded ${step > s ? 'bg-blue-600' : 'bg-border'}`} />}
-                                </React.Fragment>
-                            ))}
-                        </div>
+                                    <span
+                                        className={`hidden text-xs font-semibold sm:block ${
+                                            active ? 'text-text-main' : 'text-text-soft'
+                                        }`}
+                                    >
+                                        {label}
+                                    </span>
+                                    {number < stepLabels.length && (
+                                        <span
+                                            aria-hidden="true"
+                                            className={`h-px flex-1 ${complete ? 'bg-blue-600' : 'bg-border'}`}
+                                        />
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ol>
 
-                        <form onSubmit={handleSubmit} className="bg-bg-main rounded-3xl border border-border p-8 shadow-sm">
-                            {step === 1 && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                        <FileText size={24} className="text-blue-600" /> Informations du Projet
-                                    </h2>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Titre du projet *</label>
-                                            <input type="text" name="title" value={formData.title} onChange={handleInputChange}
-                                                placeholder="Ex: Refonte de site web e-commerce" className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" required />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Categorie *</label>
-                                            <select name="category" value={formData.category} onChange={handleInputChange}
-                                                className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" required>
-                                                <option value="">Selectionnez une categorie</option>
-                                                {categories.map(cat => (<option key={cat.id} value={cat.id}>{cat.label}</option>))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Description detaillee *</label>
-                                            <textarea name="description" value={formData.description} onChange={handleInputChange} rows={6}
-                                                placeholder="Decrivez votre projet en detail..." className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none resize-none" required />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 2 && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                        <Tag size={24} className="text-blue-600" /> Competences & Budget
-                                    </h2>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Competences requises</label>
-                                            <div className="flex gap-2 mb-3">
-                                                <input type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)}
-                                                    onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-                                                    placeholder="Ajouter une competence" className="flex-1 px-5 py-3 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" />
-                                                <button type="button" onClick={handleAddSkill} className="px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700">Ajouter</button>
-                                            </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {formData.skills.map(skill => (
-                                                    <span key={skill} className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium flex items-center gap-2">
-                                                        {skill} <button type="button" onClick={() => handleRemoveSkill(skill)}><X size={14} /></button>
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-bold mb-2">Budget minimum (EUR)</label>
-                                                <input type="number" name="budgetMin" value={formData.budgetMin} onChange={handleInputChange}
-                                                    placeholder="500" className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-bold mb-2">Budget maximum (EUR)</label>
-                                                <input type="number" name="budgetMax" value={formData.budgetMax} onChange={handleInputChange}
-                                                    placeholder="2000" className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {step === 3 && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                        <Clock size={24} className="text-blue-600" /> Details supplementaires
-                                    </h2>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Duree estimee *</label>
-                                            <select name="duration" value={formData.duration} onChange={handleInputChange}
-                                                className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" required>
-                                                <option value="">Selectionnez une duree</option>
-                                                {durations.map(d => (<option key={d.id} value={d.id}>{d.label}</option>))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Niveau d'experience *</label>
-                                            <select name="experienceLevel" value={formData.experienceLevel} onChange={handleInputChange}
-                                                className="w-full px-5 py-4 bg-bg-soft border border-border rounded-xl focus:border-blue-500 outline-none" required>
-                                                <option value="">Selectionnez le niveau</option>
-                                                {experienceLevels.map(l => (<option key={l.id} value={l.id}>{l.label}</option>))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold mb-2">Fichiers joints (optionnel)</label>
-                                            <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
-                                                <Upload size={32} className="mx-auto mb-3 text-text-soft" />
-                                                <p className="text-text-soft">Glissez-deposez vos fichiers ici</p>
-                                                <p className="text-xs text-text-soft mt-2">PDF, DOC, ZIP (Max 10MB)</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            <div className="flex justify-between mt-8 pt-6 border-t border-border">
-                                {step > 1 ? (
-                                    <button type="button" onClick={() => setStep(step - 1)} className="btn btn-secondary">Retour</button>
-                                ) : <div />}
-                                {step < 3 ? (
-                                    <button type="button" onClick={() => setStep(step + 1)} className="btn btn-primary">Suivant</button>
-                                ) : (
-                                    <button type="submit" className="btn btn-primary flex items-center gap-2">
-                                        <CheckCircle size={18} /> Publier le projet
-                                    </button>
-                                )}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="mt-6 rounded-3xl border border-border bg-bg-main p-6 shadow-card sm:p-8"
+                        noValidate
+                    >
+                        {error && (
+                            <div
+                                role="alert"
+                                className="mb-6 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
+                            >
+                                <AlertCircle size={17} className="mt-0.5 shrink-0" aria-hidden="true" />
+                                {error}
                             </div>
-                        </form>
-                    </motion.div>
-                </div>
+                        )}
+
+                        {step === 1 && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                                <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+                                    <FileText size={20} className="text-blue-600" aria-hidden="true" />
+                                    Informations du projet
+                                </h2>
+                                <div>
+                                    <label htmlFor="title" className="mb-2 block text-sm font-semibold">
+                                        Titre du projet
+                                    </label>
+                                    <input
+                                        id="title"
+                                        name="title"
+                                        type="text"
+                                        value={formData.title}
+                                        onChange={handleInputChange}
+                                        placeholder="Ex : Refonte de site web e-commerce"
+                                        className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="category" className="mb-2 block text-sm font-semibold">
+                                        Catégorie
+                                    </label>
+                                    <select
+                                        id="category"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleInputChange}
+                                        className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    >
+                                        <option value="">Sélectionnez une catégorie</option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="description" className="mb-2 block text-sm font-semibold">
+                                        Description détaillée
+                                    </label>
+                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        rows={7}
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                        placeholder="Décrivez le contexte, les objectifs et le résultat attendu…"
+                                        className="w-full resize-none rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                    <p className="mt-1 text-[11px] text-text-soft">
+                                        {formData.description.trim().length} caractères (30 minimum)
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {step === 2 && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                                <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+                                    <Tag size={20} className="text-blue-600" aria-hidden="true" />
+                                    Compétences & budget
+                                </h2>
+                                <div>
+                                    <label htmlFor="skill" className="mb-2 block text-sm font-semibold">
+                                        Compétences requises
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            id="skill"
+                                            type="text"
+                                            value={skillInput}
+                                            onChange={(event) => setSkillInput(event.target.value)}
+                                            onKeyDown={(event) => {
+                                                if (event.key === 'Enter') {
+                                                    event.preventDefault();
+                                                    handleAddSkill();
+                                                }
+                                            }}
+                                            placeholder="Ajouter une compétence"
+                                            className="flex-1 rounded-xl border border-border bg-bg-soft px-4 py-3 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleAddSkill}
+                                            className="btn btn-secondary px-4 py-3 text-sm"
+                                        >
+                                            Ajouter
+                                        </button>
+                                    </div>
+                                    {formData.skills.length > 0 && (
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {formData.skills.map((skill) => (
+                                                <span
+                                                    key={skill}
+                                                    className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
+                                                >
+                                                    {skill}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveSkill(skill)}
+                                                        aria-label={`Retirer ${skill}`}
+                                                        className="rounded-full p-0.5 hover:bg-blue-100 dark:hover:bg-blue-900"
+                                                    >
+                                                        <X size={12} aria-hidden="true" />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label htmlFor="budgetMin" className="mb-2 block text-sm font-semibold">
+                                            Budget minimum (€)
+                                        </label>
+                                        <input
+                                            id="budgetMin"
+                                            name="budgetMin"
+                                            type="number"
+                                            min="1"
+                                            value={formData.budgetMin}
+                                            onChange={handleInputChange}
+                                            placeholder="500"
+                                            className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="budgetMax" className="mb-2 block text-sm font-semibold">
+                                            Budget maximum (€)
+                                        </label>
+                                        <input
+                                            id="budgetMax"
+                                            name="budgetMax"
+                                            type="number"
+                                            min="1"
+                                            value={formData.budgetMax}
+                                            onChange={handleInputChange}
+                                            placeholder="2000"
+                                            className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {step === 3 && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                                <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+                                    <Clock size={20} className="text-blue-600" aria-hidden="true" />
+                                    Détails supplémentaires
+                                </h2>
+                                <div>
+                                    <label htmlFor="duration" className="mb-2 block text-sm font-semibold">
+                                        Durée estimée
+                                    </label>
+                                    <select
+                                        id="duration"
+                                        name="duration"
+                                        value={formData.duration}
+                                        onChange={handleInputChange}
+                                        className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    >
+                                        <option value="">Sélectionnez une durée</option>
+                                        {durations.map((duration) => (
+                                            <option key={duration.id} value={duration.id}>
+                                                {duration.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="experienceLevel" className="mb-2 block text-sm font-semibold">
+                                        Niveau d’expérience
+                                    </label>
+                                    <select
+                                        id="experienceLevel"
+                                        name="experienceLevel"
+                                        value={formData.experienceLevel}
+                                        onChange={handleInputChange}
+                                        className="w-full rounded-xl border border-border bg-bg-soft px-4 py-3.5 text-sm outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    >
+                                        <option value="">Sélectionnez le niveau</option>
+                                        {experienceLevels.map((level) => (
+                                            <option key={level.id} value={level.id}>
+                                                {level.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="rounded-xl border border-blue-200/60 bg-blue-50 p-4 text-xs text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
+                                    Les pièces jointes ne sont pas disponibles dans cette version de démonstration.
+                                </div>
+                            </motion.div>
+                        )}
+
+                        <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+                            {step > 1 ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setStep((current) => current - 1);
+                                        setError('');
+                                    }}
+                                    className="btn btn-secondary"
+                                >
+                                    Retour
+                                </button>
+                            ) : (
+                                <span />
+                            )}
+                            {step < 3 ? (
+                                <button type="button" onClick={goNext} className="btn btn-primary">
+                                    Suivant
+                                    <ArrowRight size={16} aria-hidden="true" />
+                                </button>
+                            ) : (
+                                <button type="submit" className="btn btn-primary">
+                                    <CheckCircle size={17} aria-hidden="true" />
+                                    Publier le projet
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </motion.div>
             </div>
         </div>
     );

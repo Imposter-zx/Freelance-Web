@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "migrate": "node scripts/migrate.js",
-    "seed": "node scripts/seed.js",
+    "init": "node scripts/init.js",
+    "migrate": "node scripts/init.js",
+    "seed": "node scripts/init.js",
     "test": "vitest",
     "lint": "eslint ."
   },

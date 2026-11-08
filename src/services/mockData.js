@@ -27,6 +27,13 @@ export const freelancers = [
         experience: "8 ans",
         skills: ["React", "Node.js", "AWS"],
         rating: 4.9,
+        location: "Paris, France",
+        hourlyRate: 75,
+        availability: "Disponible",
+        reviewsCount: 24,
+        successRate: 98,
+        responseTime: "1 h",
+        languages: ["Français", "Anglais"],
         description: "Développeur passionné avec plus de 8 ans d'expérience dans la création d'applications web et mobiles performantes. Spécialiste en React, Node.js et solutions cloud AWS."
     },
     {
@@ -36,6 +43,13 @@ export const freelancers = [
         experience: "5 ans",
         skills: ["Figma", "Webflow", "Prototyping"],
         rating: 5.0,
+        location: "Lyon, France",
+        hourlyRate: 65,
+        availability: "Disponible",
+        reviewsCount: 18,
+        successRate: 100,
+        responseTime: "2 h",
+        languages: ["Français", "Anglais", "Espagnol"],
         description: "Designer créative spécialisée dans la conception d'interfaces utilisateur intuitives et esthétiques. Expertise en prototypage rapide et développement no-code."
     },
     {
@@ -45,6 +59,13 @@ export const freelancers = [
         experience: "6 ans",
         skills: ["SEO", "Copywriting", "Analytics"],
         rating: 4.8,
+        location: "Casablanca, Maroc",
+        hourlyRate: 45,
+        availability: "Sous 2 semaines",
+        reviewsCount: 31,
+        successRate: 96,
+        responseTime: "3 h",
+        languages: ["Français", "Anglais", "Arabe"],
         description: "Expert en stratégie de contenu et référencement naturel. J'aide les entreprises à augmenter leur visibilité en ligne et à générer du trafic qualifié."
     }
 ];
@@ -58,6 +79,8 @@ export const projects = [
         budgetMax: 5000,
         skills: ["React", "Node.js", "PostgreSQL"],
         createdAt: new Date().toISOString(),
+        duration: "1 à 3 mois",
+        experienceLevel: "Intermédiaire",
         status: "open",
         client: "TechEdu"
     },
@@ -69,6 +92,8 @@ export const projects = [
         budgetMax: 1500,
         skills: ["Figma", "Adobe Suite", "Branding"],
         createdAt: new Date().toISOString(),
+        duration: "Moins de 1 mois",
+        experienceLevel: "Expert",
         status: "open",
         client: "GreenCo"
     },
@@ -80,6 +105,8 @@ export const projects = [
         budgetMax: 7000,
         skills: ["React Native", "Firebase", "TypeScript"],
         createdAt: new Date().toISOString(),
+        duration: "3 à 6 mois",
+        experienceLevel: "Intermédiaire",
         status: "open",
         client: "FitLife"
     }

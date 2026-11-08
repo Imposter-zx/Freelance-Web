@@ -1,527 +1,493 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+    ArrowRight,
+    BadgeCheck,
+    Briefcase,
+    Code2,
+    MapPin,
+    MonitorSmartphone,
+    Plus,
+    Search,
+    Sparkles,
+    Star,
+    TrendingUp,
+    Users,
+} from 'lucide-react';
 import SEOMeta from '../components/common/SEOMeta';
-import { services } from '../services/mockData';
-import { ArrowRight, CheckCircle, Star, Users, Zap, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { containerVariants, itemVariants, cardTilt, parallaxMove, staggerContainer } from '../utils/animations';
+import { freelancers, projects, services } from '../services/mockData';
+import { homeContent } from '../locales/homeContent';
 import { useLanguage } from '../context/LanguageContext';
+import { containerVariants, itemVariants } from '../utils/animations';
+
+const serviceIcons = {
+    MonitorSmart: MonitorSmartphone,
+    Code2,
+    TrendingUp,
+};
 
 const Home = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const navigate = useNavigate();
+    const [query, setQuery] = useState('');
+    const copy = homeContent[language] || homeContent.fr;
 
-    const portfolio = [
-        { title: "Dashboard SaaS", image: `${import.meta.env.BASE_URL}assets/Projet1.jpg`, tags: ["React", "Tailwind"] },
-        { title: "E-commerce App", image: `${import.meta.env.BASE_URL}assets/Projet2.jpg`, tags: ["Next.js", "Stripe"] },
-        { title: "Brand Identity", image: `${import.meta.env.BASE_URL}assets/Projet3.jpg`, tags: ["Figma", "Design"] }
-    ];
-
-    const fadeInUp = {
-        initial: { opacity: 0, y: 20 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-100px" },
-        transition: { duration: 0.6, ease: "easeOut" }
+    const handleSearch = (event) => {
+        event.preventDefault();
+        const trimmed = query.trim();
+        navigate(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : '/search');
     };
 
-    const stepIcons = [
-        { 
-            title: t('howItWorks.step1.title'), 
-            desc: t('howItWorks.step1.desc'), 
-            icon: <Users className="text-blue-600" size={32} /> 
-        },
-        { 
-            title: t('howItWorks.step2.title'), 
-            desc: t('howItWorks.step2.desc'), 
-            icon: <CheckCircle className="text-blue-600" size={32} /> 
-        },
-        { 
-            title: t('howItWorks.step3.title'), 
-            desc: t('howItWorks.step3.desc'), 
-            icon: <Zap className="text-blue-600" size={32} /> 
-        }
-    ];
+    const featuredFreelancer = freelancers[1] || freelancers[0];
 
     return (
-        <>
+        <div className="bg-bg-main">
             <SEOMeta
-                title="Accueil"
-                description="ZORD est la plateforme premium pour trouver les meilleurs freelances et projets de développement web, design et marketing."
+                title={t('hero.titleHighlight')}
+                description={copy.heroSubtitle}
+                keywords="freelance, marketplace, talents, projets, ZORD"
             />
 
-            {/* Hero Section */}
-            <section className="relative overflow-hidden pt-32 pb-20 md:pt-48 md:pb-32 bg-bg-main">
-                {/* Animated background blobs with Parallax */}
-                <motion.div 
-                    className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-[120px] opacity-50 dark:opacity-20" 
-                    {...parallaxMove}
+            {/* Hero */}
+            <section className="relative overflow-hidden bg-bg-main pt-28 pb-16 sm:pt-32 lg:pt-40 lg:pb-24">
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.10),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.08),transparent_40%)]"
                 />
-                <motion.div 
-                    className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-indigo-100 rounded-full blur-[120px] opacity-50 dark:opacity-20"
-                    {...parallaxMove}
-                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                />
-
-                <div className="container relative z-10 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                    >
-        <motion.span 
-                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6 dark:bg-blue-900/30 dark:text-blue-400"
-                            initial={{ opacity: 0, y: -20 }}
+                <div className="container relative">
+                    <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+                        <motion.div
+                            initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2, duration: 0.6 }}
+                            transition={{ duration: 0.6 }}
                         >
-                            <Sparkles size={16} />
-                            {t('hero.badge')}
-                        </motion.span>
+                            <span className="inline-flex items-center gap-2 rounded-full border border-blue-200/70 bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300">
+                                <Sparkles size={14} aria-hidden="true" />
+                                {copy.badge}
+                            </span>
 
-                        <motion.h1 
-                            className="text-5xl md:text-7xl font-bold tracking-tight mb-8 font-outfit leading-tight lg:px-24"
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.7 }}
-                        >
-                            {t('hero.title.part1')}{' '}
-                            <motion.span 
-                                className="text-blue-600 inline-block"
-                                animate={{ scale: [1, 1.05, 1] }}
-                                transition={{ duration: 2.5, repeat: Infinity }}
+                            <h1 className="mt-6 max-w-2xl font-display text-4xl font-bold leading-[1.08] tracking-tight text-text-main sm:text-5xl lg:text-6xl">
+                                {copy.heroTitle}{' '}
+                                <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+                                    {copy.heroTitleAccent}
+                                </span>
+                            </h1>
+
+                            <p className="mt-6 max-w-xl text-base leading-relaxed text-text-soft sm:text-lg">
+                                {copy.heroSubtitle}
+                            </p>
+
+                            <form
+                                onSubmit={handleSearch}
+                                className="mt-8 flex max-w-xl flex-col gap-3 rounded-2xl border border-border bg-bg-main p-2 shadow-card sm:flex-row"
+                                role="search"
                             >
-                                {t('hero.title.part2')}
-                            </motion.span>
-                        </motion.h1>
+                                <label htmlFor="hero-search" className="sr-only">
+                                    {copy.searchPlaceholder}
+                                </label>
+                                <div className="relative flex-1">
+                                    <Search
+                                        size={18}
+                                        aria-hidden="true"
+                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-soft"
+                                    />
+                                    <input
+                                        id="hero-search"
+                                        type="search"
+                                        value={query}
+                                        onChange={(event) => setQuery(event.target.value)}
+                                        placeholder={copy.searchPlaceholder}
+                                        className="w-full rounded-xl border-0 bg-transparent py-3 pl-10 pr-4 text-sm outline-none placeholder:text-text-soft focus:ring-2 focus:ring-blue-500/30"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary shrink-0 px-6 py-3 text-sm"
+                                >
+                                    {copy.searchButton}
+                                    <ArrowRight size={16} aria-hidden="true" />
+                                </button>
+                            </form>
 
-                        <motion.p 
-                            className="text-lg md:text-xl text-text-soft mb-10 max-w-2xl mx-auto leading-relaxed"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.6 }}
-                        >
-                            {t('hero.subtitle')}
-                        </motion.p>
+                            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-soft">
+                                {copy.trust.map((item) => (
+                                    <span key={item} className="inline-flex items-center gap-1.5">
+                                        <BadgeCheck size={15} className="text-blue-600" aria-hidden="true" />
+                                        {item}
+                                    </span>
+                                ))}
+                            </div>
 
-                        <motion.div 
-                            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5, duration: 0.6 }}
-                        >
-                            <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Link to="/search" className="btn btn-primary px-8 py-4 text-lg w-full sm:w-auto btn-glow group flex items-center justify-center gap-2">
-                                    <span>{t('hero.searchBtn')}</span>
-                                    <motion.div
-                                        animate={{ x: [0, 5, 0] }}
-                                        transition={{ duration: 1, repeat: Infinity }}
-                                    >
-                                        <ArrowRight size={20} />
-                                    </motion.div>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                                <Link to="/search" className="btn btn-primary px-6">
+                                    {copy.browseTalents}
+                                    <ArrowRight size={17} aria-hidden="true" />
                                 </Link>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Link to="/work" className="btn btn-secondary px-8 py-4 text-lg w-full sm:w-auto hover-lift">
-                                    {t('hero.becomeFreelanceBtn')}
+                                <Link to="/post-project" className="btn btn-secondary px-6">
+                                    {copy.publishProject}
                                 </Link>
-                            </motion.div>
+                            </div>
                         </motion.div>
-                    </motion.div>
+
+                        {/* Profile preview */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30, rotate: 1 }}
+                            animate={{ opacity: 1, y: 0, rotate: 0 }}
+                            transition={{ duration: 0.7, delay: 0.15 }}
+                            className="relative mx-auto w-full max-w-md lg:mx-0 lg:justify-self-end"
+                        >
+                            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-blue-600/10 via-indigo-500/10 to-transparent blur-2xl" />
+                            <div className="rounded-[1.75rem] border border-border bg-bg-main p-6 shadow-card">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-text-soft">
+                                        {copy.previewLabel}
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                        {featuredFreelancer.availability}
+                                    </span>
+                                </div>
+
+                                <div className="mt-6 flex items-center gap-4">
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-2xl font-bold text-blue-700 dark:from-blue-950 dark:to-indigo-950 dark:text-blue-300">
+                                        {featuredFreelancer.name.charAt(0)}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="truncate font-display text-lg font-bold text-text-main">
+                                            {featuredFreelancer.name}
+                                        </p>
+                                        <p className="truncate text-sm text-text-soft">
+                                            {featuredFreelancer.role}
+                                        </p>
+                                        <p className="mt-1 flex items-center gap-1 text-xs text-text-soft">
+                                            <MapPin size={12} aria-hidden="true" />
+                                            {featuredFreelancer.location}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 flex items-center justify-between rounded-xl bg-bg-soft px-4 py-3">
+                                    <span className="flex items-center gap-1.5 text-sm font-semibold text-text-main">
+                                        <Star size={15} className="fill-amber-400 text-amber-400" aria-hidden="true" />
+                                        {featuredFreelancer.rating}
+                                        <span className="font-normal text-text-soft">
+                                            ({featuredFreelancer.reviewsCount})
+                                        </span>
+                                    </span>
+                                    <span className="text-sm font-bold text-text-main">
+                                        {featuredFreelancer.hourlyRate}€
+                                        <span className="font-normal text-text-soft">{copy.perHour}</span>
+                                    </span>
+                                </div>
+
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                    {featuredFreelancer.skills.map((skill) => (
+                                        <span
+                                            key={skill}
+                                            className="rounded-lg border border-border bg-bg-main px-2.5 py-1 text-xs font-medium text-text-soft"
+                                        >
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <Link
+                                    to={`/profile/${featuredFreelancer.id}`}
+                                    className="mt-6 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-main transition-colors hover:border-blue-300 hover:text-blue-700"
+                                >
+                                    {copy.viewAll}
+                                    <ArrowRight size={16} aria-hidden="true" />
+                                </Link>
+                            </div>
+                            <span className="mt-3 block text-center text-[11px] text-text-soft">
+                                {copy.demoProfiles}
+                            </span>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
 
-            {/* How it works */}
-            <section className="section bg-bg-soft">
+            {/* Featured freelancers */}
+            <section className="section bg-bg-soft/60" aria-labelledby="featured-talent">
                 <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>{t('howItWorks.title')}</h2>
-                        <p>{t('howItWorks.subtitle')}</p>
-                    </motion.div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 id="featured-talent" className="font-display text-2xl font-bold sm:text-3xl">
+                                {copy.freelancersTitle}
+                            </h2>
+                            <p className="mt-2 max-w-2xl text-sm text-text-soft sm:text-base">
+                                {copy.freelancersSubtitle}
+                            </p>
+                        </div>
+                        <Link
+                            to="/search"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                        >
+                            {copy.viewAll}
+                            <ArrowRight size={15} aria-hidden="true" />
+                        </Link>
+                    </div>
 
-                    <motion.div 
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                    <motion.div
+                        className="mt-8 grid gap-5 md:grid-cols-3"
                         variants={containerVariants}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
+                        viewport={{ once: true, amount: 0.15 }}
                     >
-                        {stepIcons.map((step, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={itemVariants}
-                                className="bg-bg-main border border-border p-8 rounded-2xl hover:shadow-lg transition-all text-center group cursor-pointer"
-                                whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(37, 99, 235, 0.15)" }}
-                            >
-                                <motion.div 
-                                    className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
-                                    whileHover={{ scale: 1.2, rotate: 10 }}
-                                    transition={{ type: "spring", stiffness: 400 }}
+                        {freelancers.map((freelancer) => (
+                            <motion.article key={freelancer.id} variants={itemVariants}>
+                                <Link
+                                    to={`/profile/${freelancer.id}`}
+                                    className="group flex h-full flex-col rounded-2xl border border-border bg-bg-main p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-card-hover"
                                 >
-                                    {step.icon}
-                                </motion.div>
-                                <motion.h3 
-                                    className="text-xl mb-3 font-outfit"
-                                    initial={{ opacity: 0 }}
-                                    whileInView={{ opacity: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: idx * 0.1 + 0.3 }}
-                                >
-                                    {step.title}
-                                </motion.h3>
-                                <p className="text-text-soft text-sm leading-relaxed">{step.desc}</p>
-                            </motion.div>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 text-lg font-bold text-blue-700 dark:from-blue-950 dark:to-indigo-950 dark:text-blue-300">
+                                            {freelancer.name.charAt(0)}
+                                        </div>
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                                            <Star size={12} className="fill-current" aria-hidden="true" />
+                                            {freelancer.rating}
+                                        </span>
+                                    </div>
+                                    <h3 className="mt-4 font-display text-base font-bold text-text-main transition-colors group-hover:text-blue-700">
+                                        {freelancer.name}
+                                    </h3>
+                                    <p className="text-sm text-text-soft">{freelancer.role}</p>
+                                    <p className="mt-1 flex items-center gap-1 text-xs text-text-soft">
+                                        <MapPin size={12} aria-hidden="true" />
+                                        {freelancer.location}
+                                    </p>
+                                    <div className="mt-4 flex flex-wrap gap-1.5">
+                                        {freelancer.skills.map((skill) => (
+                                            <span
+                                                key={skill}
+                                                className="rounded-md bg-bg-soft px-2 py-1 text-[11px] font-medium text-text-soft"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <div className="mt-auto flex items-center justify-between border-t border-border pt-4 text-sm">
+                                        <span className="text-text-soft">
+                                            {freelancer.experience} {copy.experience}
+                                        </span>
+                                        <span className="font-bold text-text-main">
+                                            {freelancer.hourlyRate}€
+                                            <span className="font-normal text-text-soft">{copy.perHour}</span>
+                                        </span>
+                                    </div>
+                                </Link>
+                            </motion.article>
                         ))}
                     </motion.div>
+                    <p className="mt-4 text-center text-[11px] text-text-soft">{copy.demoProfiles}</p>
                 </div>
             </section>
 
             {/* Services */}
-            <section id="services" className="section bg-bg-main">
+            <section className="section" aria-labelledby="services">
                 <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>{t('services.title')}</h2>
-                        <p>{t('services.subtitle')}</p>
-                    </motion.div>
+                    <div className="mx-auto max-w-2xl text-center">
+                        <h2 id="services" className="font-display text-2xl font-bold sm:text-3xl">
+                            {t('services.title')}
+                        </h2>
+                        <p className="mt-3 text-sm text-text-soft sm:text-base">{t('services.subtitle')}</p>
+                    </div>
 
-                    <motion.div 
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        {services.map((service, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={itemVariants}
-                                className="p-10 border border-border rounded-2xl bg-bg-main relative overflow-hidden group cursor-pointer"
-                                {...cardTilt}
-                            >
-                                <motion.div
-                                    className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 opacity-0 group-hover:opacity-5 transition-opacity"
-                                />
-                                <div className="relative z-10">
-                                    <h3 className="text-2xl mb-4 font-outfit font-bold">{service.title}</h3>
-                                    <p className="text-text-soft mb-6 leading-relaxed">{service.description}</p>
-                                    <Link to="/search" className="text-blue-600 font-bold flex items-center gap-2 hover:gap-3 transition-all group/link">
-                                        {t('common.explore')}
-                                        <motion.div
-                                            animate={{ x: [0, 3, 0] }}
-                                            transition={{ duration: 1, repeat: Infinity }}
-                                        >
-                                            <ArrowRight size={18} />
-                                        </motion.div>
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Portfolio */}
-            <section id="portfolio" className="section bg-bg-soft">
-                <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>{t('portfolio.title')}</h2>
-                        <p>{t('portfolio.subtitle')}</p>
-                    </motion.div>
-
-                    <motion.div 
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        {portfolio.map((item, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={itemVariants}
-                                className="group relative overflow-hidden rounded-2xl bg-white dark:bg-dark-surface shadow-lg cursor-pointer"
-                                {...cardTilt}
-                            >
-                                <div className="aspect-[4/3] overflow-hidden relative">
-                                    <motion.img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover"
-                                        initial={{ scale: 1 }}
-                                        whileHover={{ scale: 1.15 }}
-                                        transition={{ duration: 0.6 }}
-                                    />
-                                    <motion.div
-                                        className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-lg font-bold mb-3">{item.title}</h3>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {item.tags.map((tag) => (
-                                            <span 
-                                                key={tag} 
-                                                className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs rounded-full font-semibold"
-                                            >
-                                                {tag}
-                                            </span>
-                                        ))}
+                    <div className="mt-10 grid gap-5 md:grid-cols-3">
+                        {services.map((service) => {
+                            const Icon = serviceIcons[service.icon] || Briefcase;
+                            return (
+                                <article
+                                    key={service.id}
+                                    className="group rounded-2xl border border-border bg-bg-main p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-card-hover"
+                                >
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                        <Icon size={21} aria-hidden="true" />
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
+                                    <h3 className="mt-5 font-display text-base font-bold text-text-main">
+                                        {service.title}
+                                    </h3>
+                                    <p className="mt-2 text-sm leading-relaxed text-text-soft">
+                                        {service.description}
+                                    </p>
+                                </article>
+                            );
+                        })}
+                    </div>
                 </div>
             </section>
 
-            {/* Testimonials / Clients Section */}
-            <section className="section bg-bg-main">
+            {/* How it works */}
+            <section className="section bg-bg-soft/60" aria-labelledby="how-it-works">
                 <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>Trust by Industry Leaders</h2>
-                        <p>Trusted by companies and innovators from around the world</p>
-                    </motion.div>
+                    <div className="mx-auto max-w-2xl text-center">
+                        <h2 id="how-it-works" className="font-display text-2xl font-bold sm:text-3xl">
+                            {t('howItWorks.title')}
+                        </h2>
+                        <p className="mt-3 text-sm text-text-soft sm:text-base">{t('howItWorks.subtitle')}</p>
+                    </div>
 
-                    {/* Animated Client Logos Carousel */}
-                    <motion.div 
-                        className="flex flex-wrap justify-center items-center gap-12 py-12"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        {['TechCorp', 'Innovate', 'Digital Pro', 'Cloud First', 'DataHub', 'Smart Systems', 'NextGen', 'FutureFlow'].map((company, idx) => (
-                            <motion.div
-                                key={company}
-                                className="px-6 py-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full border border-blue-200 dark:border-blue-700/30 font-semibold text-blue-600 dark:text-blue-400 shadow-sm"
-                                whileHover={{ scale: 1.1, boxShadow: "0 10px 20px rgba(37, 99, 235, 0.2)" }}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1, duration: 0.4 }}
+                    <div className="mt-10 grid gap-5 md:grid-cols-3">
+                        {[1, 2, 3].map((step, index) => (
+                            <div
+                                key={step}
+                                className="relative rounded-2xl border border-border bg-bg-main p-6 shadow-card"
                             >
-                                {company}
-                            </motion.div>
+                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                                    {step}
+                                </span>
+                                <h3 className="mt-4 font-display text-base font-bold text-text-main">
+                                    {t(`howItWorks.step${step}.title`)}
+                                </h3>
+                                <p className="mt-2 text-sm leading-relaxed text-text-soft">
+                                    {t(`howItWorks.step${step}.desc`)}
+                                </p>
+                                {index < 2 && (
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute -right-3 top-9 hidden h-px w-6 bg-border md:block"
+                                    />
+                                )}
+                            </div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
-            {/* Animated Tagline - Inspiration from Cometrix */}
-            <section className="py-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 overflow-hidden relative">
-                <motion.div 
-                    className="whitespace-nowrap flex items-center gap-12 text-white text-3xl md:text-5xl font-bold"
-                    animate={{ x: [0, -1000] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                >
-                    <span>We connect talent with opportunity</span>
-                    <span className="text-blue-200">•</span>
-                    <span>We connect talent with opportunity</span>
-                    <span className="text-blue-200">•</span>
-                    <span>We connect talent with opportunity</span>
-                    <span className="text-blue-200">•</span>
-                </motion.div>
-            </section>
-
-            {/* Resources / Blog Section */}
-            <section className="section bg-bg-soft">
+            {/* Projects */}
+            <section className="section" aria-labelledby="recent-projects">
                 <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>Insights & Resources</h2>
-                        <p>Expert tips and industry insights to help you succeed</p>
-                    </motion.div>
-
-                    <motion.div 
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        {[
-                            { title: "How to Choose the Right Freelancer", desc: "5 tips for finding the perfect match for your project", tag: "Guide" },
-                            { title: "Remote Work Best Practices", desc: "Optimize productivity and collaboration with your team", tag: "Advice" },
-                            { title: "Pricing Your Freelance Services", desc: "Strategies to ensure you're valued appropriately", tag: "Strategy" }
-                        ].map((article, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={itemVariants}
-                                className="bg-bg-main border border-border rounded-2xl p-8 hover:border-blue-300 transition-all cursor-pointer group"
-                                whileHover={{ y: -8, boxShadow: "0 20px 50px rgba(37, 99, 235, 0.2)" }}
-                            >
-                                <motion.span 
-                                    className="inline-block px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-full mb-4"
-                                    initial={{ opacity: 0 }}
-                                    whileHover={{ opacity: 1, scale: 1.1 }}
-                                    transition={{ duration: 0.2 }}
-                                >
-                                    {article.tag}
-                                </motion.span>
-                                <h3 className="text-lg font-bold mb-3 group-hover:text-blue-600 transition-colors font-outfit">{article.title}</h3>
-                                <p className="text-text-soft text-sm mb-4">{article.desc}</p>
-                                <motion.div 
-                                    className="flex items-center gap-2 text-blue-600 font-bold text-sm"
-                                    animate={{ x: [0, 5, 0] }}
-                                    transition={{ duration: 1, repeat: Infinity }}
-                                >
-                                    Read More <ArrowRight size={16} />
-                                </motion.div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Team Section */}
-            <section className="section bg-bg-main">
-                <div className="container">
-                    <motion.div 
-                        className="section-title"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h2>Meet Our Team</h2>
-                        <p>Passionate experts dedicated to connecting talent with opportunity</p>
-                    </motion.div>
-
-                    <motion.div 
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        {[
-                            { name: "Sarah Johnson", role: "Founder & CEO", icon: "👩‍💼" },
-                            { name: "Marc Chen", role: "Head of Operations", icon: "👨‍💼" },
-                            { name: "Emma Rodriguez", role: "Community Manager", icon: "👩‍🦰" }
-                        ].map((member, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={itemVariants}
-                                className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700/30"
-                                whileHover={{ y: -8, boxShadow: "0 20px 50px rgba(37, 99, 235, 0.15)" }}
-                            >
-                                <motion.div 
-                                    className="text-6xl mb-4"
-                                    animate={{ scale: [1, 1.1, 1] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                >
-                                    {member.icon}
-                                </motion.div>
-                                <h3 className="text-lg font-bold mb-1 font-outfit">{member.name}</h3>
-                                <p className="text-blue-600 font-medium text-sm">{member.role}</p>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Final CTA Section */}
-            <section id="contact" className="section bg-bg-main">
-                <div className="container max-w-4xl">
-                    <motion.div
-                        {...fadeInUp}
-                        className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[2.5rem] p-12 md:p-16 text-center text-white relative overflow-hidden shadow-2xl"
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <motion.div 
-                            className="absolute top-[-20%] right-[-10%] w-[300px] h-[300px] bg-white/10 rounded-full blur-[80px]"
-                            animate={{ x: [0, 20, 0], y: [0, 20, 0] }}
-                            transition={{ duration: 5, repeat: Infinity }}
-                        />
-                        <motion.div 
-                            className="absolute bottom-[-20%] left-[-10%] w-[250px] h-[250px] bg-blue-400/10 rounded-full blur-[80px]"
-                            animate={{ x: [0, -20, 0], y: [0, -20, 0] }}
-                            transition={{ duration: 6, repeat: Infinity }}
-                        />
-
-                        <div className="relative z-10">
-                            <motion.h2 
-                                className="text-3xl md:text-4xl font-bold text-white mb-6"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                {t('cta.title')}
-                            </motion.h2>
-
-                            <motion.p 
-                                className="text-blue-100 text-lg mb-10 max-w-xl mx-auto"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.1, duration: 0.6 }}
-                            >
-                                {t('cta.subtitle')}
-                            </motion.p>
-
-                            <motion.div 
-                                className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2, duration: 0.6 }}
-                            >
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <Link to="/register" className="bg-white text-blue-600 btn px-10 py-4 hover:bg-blue-50 font-bold transition-all">
-                                        {t('cta.startBtn')}
-                                    </Link>
-                                </motion.div>
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <a href="mailto:contact@zord.com" className="text-white border-white/30 border btn px-10 py-4 hover:bg-white/10 font-bold transition-all">
-                                        {t('cta.contactBtn')}
-                                    </a>
-                                </motion.div>
-                            </motion.div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 id="recent-projects" className="font-display text-2xl font-bold sm:text-3xl">
+                                {copy.projectsTitle}
+                            </h2>
+                            <p className="mt-2 max-w-2xl text-sm text-text-soft sm:text-base">
+                                {copy.projectsSubtitle}
+                            </p>
                         </div>
-                    </motion.div>
+                        <Link
+                            to="/work"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                        >
+                            {t('nav.postProject')}
+                            <ArrowRight size={15} aria-hidden="true" />
+                        </Link>
+                    </div>
+
+                    <div className="mt-8 grid gap-5 md:grid-cols-3">
+                        {projects.map((project) => (
+                            <article
+                                key={project.id}
+                                className="flex h-full flex-col rounded-2xl border border-border bg-bg-main p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-card-hover"
+                            >
+                                <div className="flex items-center justify-between gap-3">
+                                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                        {project.status === 'open' ? 'Ouvert' : 'Fermé'}
+                                    </span>
+                                    <span className="text-xs font-medium text-text-soft">{project.duration}</span>
+                                </div>
+                                <h3 className="mt-4 font-display text-base font-bold text-text-main">
+                                    {project.title}
+                                </h3>
+                                <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-text-soft">
+                                    {project.description}
+                                </p>
+                                <div className="mt-4 flex flex-wrap gap-1.5">
+                                    {project.skills.map((skill) => (
+                                        <span
+                                            key={skill}
+                                            className="rounded-md bg-bg-soft px-2 py-1 text-[11px] font-medium text-text-soft"
+                                        >
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+                                    <span className="text-sm font-bold text-text-main">
+                                        {project.budgetMin}€ – {project.budgetMax}€
+                                    </span>
+                                    <Link
+                                        to={`/project/${project.id}`}
+                                        className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                                    >
+                                        {t('portfolio.viewProject')}
+                                        <ArrowRight size={14} aria-hidden="true" />
+                                    </Link>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                    <p className="mt-4 text-center text-[11px] text-text-soft">{copy.demoProjects}</p>
                 </div>
             </section>
-        </>
+
+            {/* FAQ */}
+            <section className="section bg-bg-soft/60" aria-labelledby="faq">
+                <div className="container max-w-3xl">
+                    <div className="text-center">
+                        <h2 id="faq" className="font-display text-2xl font-bold sm:text-3xl">
+                            {copy.faqTitle}
+                        </h2>
+                        <p className="mt-3 text-sm text-text-soft sm:text-base">{copy.faqSubtitle}</p>
+                    </div>
+
+                    <div className="mt-8 space-y-3">
+                        {copy.faq.map((item) => (
+                            <details
+                                key={item.q}
+                                className="group rounded-xl border border-border bg-bg-main px-5 py-4 shadow-sm"
+                            >
+                                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-text-main marker:content-none">
+                                    {item.q}
+                                    <Plus
+                                        size={17}
+                                        aria-hidden="true"
+                                        className="shrink-0 text-text-soft transition-transform group-open:rotate-45"
+                                    />
+                                </summary>
+                                <p className="mt-3 text-sm leading-relaxed text-text-soft">{item.a}</p>
+                            </details>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="pb-20 pt-4 sm:pb-24">
+                <div className="container">
+                    <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-gradient-to-br from-blue-600 to-indigo-600 px-6 py-12 text-center text-white shadow-card sm:px-10 sm:py-16">
+                        <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_45%)]"
+                        />
+                        <div className="relative mx-auto max-w-2xl">
+                            <Users size={28} className="mx-auto mb-4 text-blue-100" aria-hidden="true" />
+                            <h2 className="font-display text-2xl font-bold sm:text-3xl">{copy.ctaTitle}</h2>
+                            <p className="mt-3 text-sm text-blue-100 sm:text-base">{copy.ctaSubtitle}</p>
+                            <div className="mt-7 flex flex-wrap justify-center gap-3">
+                                <Link
+                                    to="/register"
+                                    className="btn bg-white px-6 text-blue-700 hover:bg-blue-50"
+                                >
+                                    {copy.ctaPrimary}
+                                    <ArrowRight size={17} aria-hidden="true" />
+                                </Link>
+                                <Link
+                                    to="/search"
+                                    className="btn border border-white/30 bg-white/10 px-6 text-white hover:bg-white/20"
+                                >
+                                    {copy.ctaSecondary}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     );
 };
 

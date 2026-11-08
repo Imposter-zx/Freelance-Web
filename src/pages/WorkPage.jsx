@@ -1,112 +1,119 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import SEOMeta from '../components/common/SEOMeta';
-import { Send, CheckCircle, ArrowLeft, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEOMeta from '../components/common/SEOMeta';
+import { ArrowRight, CheckCircle, MessageSquare, Search, User, FileText } from 'lucide-react';
 
-const WorkPage = () => {
-    const [submitted, setSubmitted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+const benefits = [
+    {
+        icon: User,
+        title: 'Un profil qui vous ressemble',
+        description: 'Présentez vos compétences, votre expérience et vos exemples de réalisations.',
+    },
+    {
+        icon: Search,
+        title: 'Des projets ciblés',
+        description: 'Parcourez les briefs publiés et proposez vos services sur ceux qui vous correspondent.',
+    },
+    {
+        icon: MessageSquare,
+        title: 'Des échanges centralisés',
+        description: 'Discutez avec les clients depuis la messagerie intégrée à votre espace.',
+    },
+];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        await new Promise(r => setTimeout(r, 1500));
-        setIsLoading(false);
-        setSubmitted(true);
-    };
+const steps = [
+    'Créez votre compte freelance en quelques secondes.',
+    'Complétez votre profil et ajoutez vos compétences.',
+    'Explorez les projets et envoyez vos propositions.',
+];
 
-    if (submitted) {
-        return (
-            <div className="min-h-screen py-48 flex items-center justify-center bg-bg-soft">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="container max-w-lg text-center bg-bg-main p-16 rounded-[3rem] shadow-2xl border border-border"
-                >
-                    <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <CheckCircle size={48} />
-                    </div>
-                    <h1 className="text-3xl font-bold font-outfit mb-4">Candidature Envoyée !</h1>
-                    <p className="text-text-soft mb-10 leading-relaxed">
-                        Merci pour votre inscription. Notre équipe examinera votre profil et vous contactera dans les plus brefs délais (généralement sous 48h).
-                    </p>
-                    <Link to="/" className="btn btn-primary w-full py-4 text-lg">
-                        Retour à l'accueil
+const WorkPage = () => (
+    <div className="min-h-screen bg-bg-soft pb-20 pt-28 sm:pt-32">
+        <SEOMeta
+            title="Devenir freelance"
+            description="Créez votre profil freelance sur ZORD et proposez vos services aux clients."
+        />
+
+        <div className="container max-w-4xl">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                    Espace freelance
+                </span>
+                <h1 className="mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-text-main sm:text-4xl">
+                    Développez votre activité avec des projets qui vous ressemblent.
+                </h1>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-text-soft sm:text-base">
+                    ZORD met en relation les freelances et les clients autour de briefs clairs. Créez
+                    votre profil, suivez vos propositions et échangez depuis un seul espace.
+                </p>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                    <Link to="/register" className="btn btn-primary px-6">
+                        Créer mon compte freelance
+                        <ArrowRight size={17} aria-hidden="true" />
                     </Link>
-                </motion.div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen pt-32 pb-20 bg-bg-soft">
-            <SEOMeta title="Devenir Freelance" description="Rejoignez notre réseau d'élite et travaillez sur des projets passionnants." />
-
-            <div className="container max-w-4xl">
-                <div className="mb-12">
-                    <Link to="/" className="text-sm font-bold flex items-center gap-2 text-text-soft hover:text-blue-600 transition-colors mb-8">
-                        <ArrowLeft size={16} /> Retour
+                    <Link to="/search" className="btn btn-secondary px-6">
+                        Explorer la plateforme
                     </Link>
-                    <h1 className="text-4xl font-bold font-outfit mb-4 flex items-center gap-4">
-                        Rejoignez l'Équipe <Rocket className="text-blue-600" />
-                    </h1>
-                    <p className="text-text-soft text-lg">Remplissez le formulaire ci-dessous pour postuler en tant que freelance.</p>
                 </div>
+            </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-bg-main p-10 md:p-16 rounded-[2.5rem] border border-border shadow-xl"
-                >
-                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold pl-1">Prénom</label>
-                            <input type="text" required placeholder="Ex: Jean" className="w-full px-6 py-4 bg-bg-soft border border-border rounded-2xl focus:border-blue-500 outline-none transition-all" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold pl-1">Nom</label>
-                            <input type="text" required placeholder="Ex: Dupont" className="w-full px-6 py-4 bg-bg-soft border border-border rounded-2xl focus:border-blue-500 outline-none transition-all" />
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-semibold pl-1">Email Professionnel</label>
-                            <input type="email" required placeholder="jean@exemple.com" className="w-full px-6 py-4 bg-bg-soft border border-border rounded-2xl focus:border-blue-500 outline-none transition-all" />
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-semibold pl-1">Domaine d'Expertise</label>
-                            <select className="w-full px-6 py-4 bg-bg-soft border border-border rounded-2xl focus:border-blue-500 outline-none transition-all appearance-none cursor-pointer">
-                                <option>Développement Web</option>
-                                <option>UI/UX Design</option>
-                                <option>SEO & Marketing</option>
-                                <option>Data Science</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-semibold pl-1">Présentez-vous en quelques mots</label>
-                            <textarea rows="5" required placeholder="Parlez-nous de vos expériences..." className="w-full px-6 py-4 bg-bg-soft border border-border rounded-2xl focus:border-blue-500 outline-none transition-all resize-none"></textarea>
-                        </div>
-
-                        <div className="md:col-span-2 pt-4">
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="btn btn-primary w-full py-5 text-lg shadow-lg shadow-blue-500/20 relative"
-                            >
-                                <span className={isLoading ? 'opacity-0' : 'flex items-center gap-2'}>
-                                    Envoyer ma candidature <Send size={20} />
-                                </span>
-                                {isLoading && (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                                    </div>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                </motion.div>
+            <div className="mt-12 grid gap-5 md:grid-cols-3">
+                {benefits.map((benefit, index) => {
+                    const Icon = benefit.icon;
+                    return (
+                        <motion.article
+                            key={benefit.title}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 + index * 0.08 }}
+                            className="rounded-2xl border border-border bg-bg-main p-6 shadow-card"
+                        >
+                            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                <Icon size={20} aria-hidden="true" />
+                            </span>
+                            <h2 className="mt-4 font-display text-base font-bold text-text-main">
+                                {benefit.title}
+                            </h2>
+                            <p className="mt-2 text-sm leading-relaxed text-text-soft">
+                                {benefit.description}
+                            </p>
+                        </motion.article>
+                    );
+                })}
             </div>
+
+            <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mt-8 rounded-2xl border border-border bg-bg-main p-6 shadow-card sm:p-8"
+            >
+                <div className="flex items-center gap-2">
+                    <FileText size={19} className="text-blue-600" aria-hidden="true" />
+                    <h2 className="font-display text-lg font-bold">Comment démarrer</h2>
+                </div>
+                <ol className="mt-5 space-y-4">
+                    {steps.map((step, index) => (
+                        <li key={step} className="flex items-start gap-3">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                                {index + 1}
+                            </span>
+                            <span className="flex items-center gap-2 pt-0.5 text-sm text-text-soft">
+                                <CheckCircle size={15} className="shrink-0 text-emerald-600" aria-hidden="true" />
+                                {step}
+                            </span>
+                        </li>
+                    ))}
+                </ol>
+                <div className="mt-6 rounded-xl border border-blue-200/60 bg-blue-50 p-4 text-xs leading-relaxed text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
+                    Version démonstration : les projets, profils et messages sont des exemples stockés
+                    localement dans votre navigateur. Aucun paiement n’est traité.
+                </div>
+            </motion.section>
         </div>
-    );
-};
+    </div>
+);
 
 export default WorkPage;

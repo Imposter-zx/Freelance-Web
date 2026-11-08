@@ -1,31 +1,51 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { translations } from '../locales/translations';
 
 const LanguageContext = createContext();
 
+const getValue = (locale, keys) => {
+  let result = translations[locale];
+  for (const key of keys) {
+    result = result?.[key];
+  }
+  return typeof result === 'string' ? result : undefined;
+};
+
+const interpolate = (value, params) => {
+  if (!params) return value;
+  return value.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+    params[key] !== undefined ? String(params[key]) : `{{${key}}}`
+  );
+};
+
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    // Get saved language or default to 'fr'
-    return localStorage.getItem('language') || 'fr';
+    const saved = localStorage.getItem('language');
+    return translations[saved] ? saved : 'fr';
   });
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    document.documentElement.lang = language;
+    document.documentElement.dir = ['ar', 'he', 'fa'].includes(language) ? 'rtl' : 'ltr';
   }, [language]);
 
-  const t = (key) => {
-    const keys = key.split('.');
-    let result = translations[language];
-    
-    for (const k of keys) {
-      result = result?.[k];
-    }
-    
-    return result || key;
-  };
+  const value = useMemo(() => {
+    const t = (key, params) => {
+      const keys = key.split('.');
+      const current = getValue(language, keys);
+      // Fall back to the primary locale instead of rendering raw keys.
+      const fallbackFr = getValue('fr', keys);
+      const fallbackEn = getValue('en', keys);
+      const result = current ?? fallbackFr ?? fallbackEn ?? key;
+      return interpolate(result, params);
+    };
+
+    return { language, setLanguage, t };
+  }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
@@ -38,3 +58,5 @@ export const useLanguage = () => {
   }
   return context;
 };
+
+export default LanguageContext;

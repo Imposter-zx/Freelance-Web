@@ -9,9 +9,18 @@ export const MessageProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        const stored = localStorage.getItem('conversations');
-        if (stored) {
-            setConversations(JSON.parse(stored));
+        let storedConversations = null;
+        let storedMessages = null;
+        try {
+            storedConversations = JSON.parse(localStorage.getItem('conversations') || 'null');
+            storedMessages = JSON.parse(localStorage.getItem('messages') || 'null');
+        } catch {
+            storedConversations = null;
+            storedMessages = null;
+        }
+
+        if (Array.isArray(storedConversations)) {
+            setConversations(storedConversations);
         } else {
             const initialConversations = [
                 {
@@ -19,7 +28,7 @@ export const MessageProvider = ({ children }) => {
                     participantId: 1,
                     participantName: "Jean Dupont",
                     participantAvatar: "JD",
-                    lastMessage: "Bonjour, je suis interesse par votre projet",
+                    lastMessage: "Bonjour, je suis intéressé par votre projet.",
                     timestamp: new Date(Date.now() - 3600000).toISOString(),
                     unread: 2
                 },
@@ -28,7 +37,7 @@ export const MessageProvider = ({ children }) => {
                     participantId: 2,
                     participantName: "Sophie Martin",
                     participantAvatar: "SM",
-                    lastMessage: "J'ai termine la premiere version du design",
+                    lastMessage: "J'ai terminé la première version du design.",
                     timestamp: new Date(Date.now() - 86400000).toISOString(),
                     unread: 0
                 }
@@ -37,15 +46,14 @@ export const MessageProvider = ({ children }) => {
             localStorage.setItem('conversations', JSON.stringify(initialConversations));
         }
 
-        const storedMessages = localStorage.getItem('messages');
-        if (storedMessages) {
-            setMessages(JSON.parse(storedMessages));
+        if (Array.isArray(storedMessages)) {
+            setMessages(storedMessages);
         } else {
             const initialMessages = [
-                { id: 1, conversationId: 1, senderId: 'freelancer', text: "Bonjour, je suis interesse par votre projet", timestamp: new Date(Date.now() - 3600000).toISOString() },
-                { id: 2, conversationId: 1, senderId: 'user', text: "Excellent ! Pouvez-vous me parler de votre experience ?", timestamp: new Date(Date.now() - 3500000).toISOString() },
-                { id: 3, conversationId: 1, senderId: 'freelancer', text: "J'ai 8 ans d'experience en developpement web", timestamp: new Date(Date.now() - 3400000).toISOString() },
-                { id: 4, conversationId: 2, senderId: 'freelancer', text: "J'ai termine la premiere version du design", timestamp: new Date(Date.now() - 86400000).toISOString() },
+                { id: 1, conversationId: 1, senderId: 'freelancer', text: "Bonjour, je suis intéressé par votre projet.", timestamp: new Date(Date.now() - 3600000).toISOString() },
+                { id: 2, conversationId: 1, senderId: 'user', text: "Excellent ! Pouvez-vous me parler de votre expérience ?", timestamp: new Date(Date.now() - 3500000).toISOString() },
+                { id: 3, conversationId: 1, senderId: 'freelancer', text: "J'ai 8 ans d'expérience en développement web.", timestamp: new Date(Date.now() - 3400000).toISOString() },
+                { id: 4, conversationId: 2, senderId: 'freelancer', text: "J'ai terminé la première version du design.", timestamp: new Date(Date.now() - 86400000).toISOString() },
             ];
             setMessages(initialMessages);
             localStorage.setItem('messages', JSON.stringify(initialMessages));
