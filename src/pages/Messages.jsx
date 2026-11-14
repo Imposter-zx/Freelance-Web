@@ -54,7 +54,7 @@ const Messages = () => {
         if (activeConversation) {
             markAsRead(activeConversation.id);
         }
-    }, [activeConversation?.id]);
+    }, [activeConversation, markAsRead]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });

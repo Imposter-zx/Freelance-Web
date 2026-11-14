@@ -74,8 +74,13 @@ const Dashboard = () => {
     const receivedProposalItems = proposals.filter((proposal) =>
         myProjectIds.has(String(proposal.projectId))
     );
+    const myProposals = isFreelancer
+        ? proposals.filter(
+              (proposal) => user?.email && proposal.freelancerEmail === user.email
+          )
+        : receivedProposalItems;
     const receivedProposals = receivedProposalItems.length;
-    const pendingProposals = proposals.filter((proposal) => proposal.status === 'pending');
+    const pendingProposals = myProposals.filter((proposal) => proposal.status === 'pending');
     const pendingReceivedProposals = receivedProposalItems.filter(
         (proposal) => proposal.status === 'pending'
     );
@@ -184,7 +189,7 @@ const Dashboard = () => {
         ? [
               {
                   label: 'Propositions envoyées',
-                  value: proposals.length,
+                  value: myProposals.length,
                   icon: <Send size={20} />,
                   color: 'bg-blue-600',
               },
@@ -289,7 +294,8 @@ const Dashboard = () => {
           ];
 
     const activity = useMemo(() => {
-        const projectItems = postedProjects.map((project) => {
+        const activityProjects = isFreelancer ? [] : postedProjects;
+        const projectItems = activityProjects.map((project) => {
             const proposalCount = proposals.filter(
                 (proposal) => String(proposal.projectId) === String(project.id)
             ).length;
@@ -307,7 +313,7 @@ const Dashboard = () => {
                 date: project.completedAt || project.createdAt,
             };
         });
-        const proposalItems = proposals.map((proposal) => ({
+        const proposalItems = myProposals.map((proposal) => ({
             id: `proposal-${proposal.id}`,
             type: 'proposal',
             title: proposal.projectTitle,
@@ -334,7 +340,7 @@ const Dashboard = () => {
             .filter((item) => item.date)
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .slice(0, 6);
-    }, [postedProjects, proposals, conversations]);
+    }, [postedProjects, proposals, conversations, isFreelancer, myProposals]);
 
     const activityIcons = {
         project: FileText,
@@ -403,15 +409,20 @@ const Dashboard = () => {
 
                             <div className="mt-5 space-y-3">
                                 {isFreelancer ? (
-                                    proposals.length > 0 ? (
-                                        proposals.slice(0, 5).map((proposal) => (
+                                    myProposals.length > 0 ? (
+                                        myProposals.slice(0, 5).map((proposal) => (
                                             <article
                                                 key={proposal.id}
                                                 className="flex flex-col gap-3 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
                                             >
                                                 <div className="min-w-0">
                                                     <h3 className="truncate text-sm font-semibold text-text-main">
-                                                        {proposal.projectTitle}
+                                                        <Link
+                                                            to={`/project/${proposal.projectId}`}
+                                                            className="transition-colors hover:text-blue-700"
+                                                        >
+                                                            {proposal.projectTitle}
+                                                        </Link>
                                                     </h3>
                                                     <p className="mt-0.5 text-xs text-text-soft">
                                                         Envoyée {relativeTime(proposal.createdAt)}
@@ -468,7 +479,12 @@ const Dashboard = () => {
                                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                                     <div className="min-w-0">
                                                         <h3 className="truncate text-sm font-semibold text-text-main">
-                                                            {project.title}
+                                                            <Link
+                                                                to={`/project/${project.id}`}
+                                                                className="transition-colors hover:text-blue-700"
+                                                            >
+                                                                {project.title}
+                                                            </Link>
                                                         </h3>
                                                         <p className="mt-0.5 text-xs text-text-soft">
                                                             Publié {relativeTime(project.createdAt)} ·{' '}
@@ -569,7 +585,12 @@ const Dashboard = () => {
                                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                     <div className="min-w-0">
                                                         <p className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                                                            {proposal.projectTitle}
+                                                            <Link
+                                                                to={`/project/${proposal.projectId}`}
+                                                                className="hover:underline"
+                                                            >
+                                                                {proposal.projectTitle}
+                                                            </Link>
                                                         </p>
                                                         <h3 className="mt-1 text-sm font-semibold text-text-main">
                                                             {proposal.freelancerName || 'Freelance'}

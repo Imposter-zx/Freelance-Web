@@ -68,6 +68,8 @@ const formatReviewDate = (value) => {
     return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(date);
 };
 
+const createReviewId = () => Date.now();
+
 const Profile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -85,15 +87,22 @@ const Profile = () => {
 
     if (!freelancer) {
         return (
-            <div className="flex min-h-[70vh] items-center justify-center bg-bg-soft px-6 pt-32">
-                <div className="text-center">
-                    <h1 className="font-display text-2xl font-bold">Profil introuvable</h1>
-                    <p className="mt-2 text-sm text-text-soft">Ce freelance n’existe pas ou n’est plus disponible.</p>
-                    <button type="button" onClick={() => navigate('/search')} className="btn btn-primary mt-6">
-                        Explorer les talents
-                    </button>
+            <>
+                <SEOMeta
+                    title="Profil introuvable"
+                    description="Ce freelance n’existe pas ou n’est plus disponible."
+                    noIndex
+                />
+                <div className="flex min-h-[70vh] items-center justify-center bg-bg-soft px-6 pt-32">
+                    <div className="text-center">
+                        <h1 className="font-display text-2xl font-bold">Profil introuvable</h1>
+                        <p className="mt-2 text-sm text-text-soft">Ce freelance n’existe pas ou n’est plus disponible.</p>
+                        <button type="button" onClick={() => navigate('/search')} className="btn btn-primary mt-6">
+                            Explorer les talents
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -176,7 +185,7 @@ const Profile = () => {
         }
 
         const review = {
-            id: Date.now(),
+            id: createReviewId(),
             freelancerId: freelancer.id,
             reviewerName: user.name || 'Client',
             reviewerEmail: user.email,

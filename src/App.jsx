@@ -1,6 +1,5 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { MotionConfig } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import { MessageProvider } from './context/MessageContext';
@@ -32,8 +31,7 @@ const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
 function App() {
   return (
-    <HelmetProvider>
-      <LanguageProvider>
+    <LanguageProvider>
         <AuthProvider>
           <MessageProvider>
             <NotificationProvider>
@@ -108,8 +106,7 @@ function App() {
             </NotificationProvider>
           </MessageProvider>
         </AuthProvider>
-      </LanguageProvider>
-    </HelmetProvider>
+    </LanguageProvider>
   );
 }
 

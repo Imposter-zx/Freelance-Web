@@ -38,7 +38,9 @@ const ProjectDetails = () => {
     const { addNotification } = useNotifications();
 
     useEffect(() => {
-        const found = projects.find((item) => item.id === parseInt(id, 10));
+        const found =
+            projects.find((item) => String(item.id) === String(id)) ||
+            readStoredArray('postedProjects').find((item) => String(item.id) === String(id));
         if (found) {
             setProject(found);
             setBidAmount(found.budgetMin.toString());
@@ -61,6 +63,21 @@ const ProjectDetails = () => {
 
         if (!user) {
             navigate('/login');
+            return;
+        }
+
+        if (user.role !== 'freelancer') {
+            setError('Seuls les comptes freelance peuvent envoyer une proposition.');
+            return;
+        }
+
+        if (project.clientEmail && project.clientEmail === user.email) {
+            setError('Vous ne pouvez pas envoyer de proposition sur votre propre projet.');
+            return;
+        }
+
+        if (project.status !== 'open') {
+            setError('Ce projet n’accepte plus de propositions.');
             return;
         }
 
@@ -113,21 +130,32 @@ const ProjectDetails = () => {
 
     if (loaded && !project) {
         return (
-            <div className="flex min-h-[70vh] items-center justify-center bg-bg-soft px-6 pt-32">
-                <div className="text-center">
-                    <h1 className="font-display text-2xl font-bold">Projet introuvable</h1>
-                    <p className="mt-2 text-sm text-text-soft">Ce projet n’existe pas ou a été retiré.</p>
-                    <Link to="/" className="btn btn-primary mt-6">
-                        Retour à l’accueil
-                    </Link>
+            <>
+                <SEOMeta
+                    title="Projet introuvable"
+                    description="Ce projet n’existe pas ou a été retiré."
+                    noIndex
+                />
+                <div className="flex min-h-[70vh] items-center justify-center bg-bg-soft px-6 pt-32">
+                    <div className="text-center">
+                        <h1 className="font-display text-2xl font-bold">Projet introuvable</h1>
+                        <p className="mt-2 text-sm text-text-soft">Ce projet n’existe pas ou a été retiré.</p>
+                        <Link to="/" className="btn btn-primary mt-6">
+                            Retour à l’accueil
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     if (!project) {
         return <div className="min-h-screen bg-bg-soft pt-32" aria-busy="true" />;
     }
+
+    const isProjectOwner = Boolean(
+        project.clientEmail && user?.email && project.clientEmail === user.email
+    );
 
     return (
         <div className="min-h-screen bg-bg-soft pb-20 pt-28 sm:pt-32">
@@ -152,7 +180,13 @@ const ProjectDetails = () => {
                         >
                             <div className="flex flex-wrap items-center gap-2">
                                 <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                    {project.status === 'open' ? 'Ouvert aux offres' : 'Fermé'}
+                                    {project.status === 'open'
+                                        ? 'Ouvert aux offres'
+                                        : project.status === 'in_progress'
+                                          ? 'En cours'
+                                          : project.status === 'completed'
+                                            ? 'Terminé'
+                                            : 'Fermé'}
                                 </span>
                                 {project.experienceLevel && (
                                     <span className="rounded-full bg-bg-soft px-2.5 py-1 text-[11px] font-semibold text-text-soft">
@@ -227,7 +261,61 @@ const ProjectDetails = () => {
                                 Placer une offre
                             </h2>
 
-                            {submitted ? (
+                            {!user ? (
+                                <div className="py-6 text-center">
+                                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                                        <Send size={26} aria-hidden="true" />
+                                    </div>
+                                    <h3 className="mt-4 font-semibold text-text-main">
+                                        Connectez-vous pour proposer
+                                    </h3>
+                                    <p className="mt-2 text-sm text-text-soft">
+                                        Un compte freelance est nécessaire pour envoyer une offre.
+                                    </p>
+                                    <Link
+                                        to="/login"
+                                        state={{ from: `/project/${project.id}` }}
+                                        className="btn btn-primary mt-5 w-full text-sm"
+                                    >
+                                        Se connecter
+                                    </Link>
+                                </div>
+                            ) : user.role !== 'freelancer' && !isProjectOwner ? (
+                                <div className="py-6 text-center">
+                                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
+                                        <AlertCircle size={26} aria-hidden="true" />
+                                    </div>
+                                    <h3 className="mt-4 font-semibold text-text-main">
+                                        Compte freelance requis
+                                    </h3>
+                                    <p className="mt-2 text-sm text-text-soft">
+                                        Votre compte est configuré comme client. Créez un compte
+                                        freelance pour envoyer des propositions.
+                                    </p>
+                                    <Link
+                                        to="/register"
+                                        className="btn btn-secondary mt-5 w-full text-sm"
+                                    >
+                                        Créer un compte freelance
+                                    </Link>
+                                </div>
+                            ) : isProjectOwner ? (
+                                <div className="py-6 text-center">
+                                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-bg-soft text-text-soft">
+                                        <Briefcase size={26} aria-hidden="true" />
+                                    </div>
+                                    <h3 className="mt-4 font-semibold text-text-main">
+                                        Votre projet
+                                    </h3>
+                                    <p className="mt-2 text-sm text-text-soft">
+                                        Vous ne pouvez pas envoyer de proposition sur votre propre
+                                        projet. Suivez les offres reçues depuis votre tableau de bord.
+                                    </p>
+                                    <Link to="/dashboard" className="btn btn-primary mt-5 w-full text-sm">
+                                        Voir mon tableau de bord
+                                    </Link>
+                                </div>
+                            ) : submitted ? (
                                 <div className="py-6 text-center">
                                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40">
                                         <CheckCircle size={28} aria-hidden="true" />

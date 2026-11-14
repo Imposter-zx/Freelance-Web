@@ -194,7 +194,7 @@ const Home = () => {
 
                                 <Link
                                     to={`/profile/${featuredFreelancer.id}`}
-                                    className="mt-6 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-main transition-colors hover:border-blue-300 hover:text-blue-700"
+                                    className="mt-6 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-main transition-colors hover:border-blue-300 hover:text-blue-700 dark:hover:border-blue-700 dark:hover:text-blue-300"
                                 >
                                     {copy.viewAll}
                                     <ArrowRight size={16} aria-hidden="true" />
@@ -222,7 +222,7 @@ const Home = () => {
                         </div>
                         <Link
                             to="/search"
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                         >
                             {copy.viewAll}
                             <ArrowRight size={15} aria-hidden="true" />
@@ -251,7 +251,7 @@ const Home = () => {
                                             {freelancer.rating}
                                         </span>
                                     </div>
-                                    <h3 className="mt-4 font-display text-base font-bold text-text-main transition-colors group-hover:text-blue-700">
+                                    <h3 className="mt-4 font-display text-base font-bold text-text-main transition-colors group-hover:text-blue-700 dark:group-hover:text-blue-300">
                                         {freelancer.name}
                                     </h3>
                                     <p className="text-sm text-text-soft">{freelancer.role}</p>
@@ -371,7 +371,7 @@ const Home = () => {
                         </div>
                         <Link
                             to="/work"
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                         >
                             {t('nav.postProject')}
                             <ArrowRight size={15} aria-hidden="true" />
@@ -412,7 +412,7 @@ const Home = () => {
                                     </span>
                                     <Link
                                         to={`/project/${project.id}`}
-                                        className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                                        className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                                     >
                                         {t('portfolio.viewProject')}
                                         <ArrowRight size={14} aria-hidden="true" />

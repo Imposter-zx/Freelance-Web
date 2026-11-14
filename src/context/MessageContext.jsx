@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
 
 const MessageContext = createContext(null);
 
@@ -112,13 +112,20 @@ export const MessageProvider = ({ children }) => {
         return newConversation;
     };
 
-    const markAsRead = (conversationId) => {
-        const updatedConversations = conversations.map(conv =>
-            conv.id === conversationId ? { ...conv, unread: 0 } : conv
-        );
-        setConversations(updatedConversations);
-        localStorage.setItem('conversations', JSON.stringify(updatedConversations));
-    };
+    const markAsRead = useCallback((conversationId) => {
+        setConversations((prev) => {
+            const hasUnread = prev.some(
+                (conv) => conv.id === conversationId && conv.unread > 0
+            );
+            if (!hasUnread) return prev;
+
+            const updatedConversations = prev.map((conv) =>
+                conv.id === conversationId ? { ...conv, unread: 0 } : conv
+            );
+            localStorage.setItem('conversations', JSON.stringify(updatedConversations));
+            return updatedConversations;
+        });
+    }, []);
 
     const getConversationMessages = (conversationId) => {
         return messages.filter(m => m.conversationId === conversationId);

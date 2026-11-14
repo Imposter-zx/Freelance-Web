@@ -15,9 +15,11 @@ const Footer = () => {
                         <Link
                             to="/"
                             className="inline-flex items-center gap-2 font-display text-xl font-bold text-blue-600"
-                            aria-label="ZORD Freelance — Accueil"
                         >
-                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+                            <span
+                                aria-hidden="true"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
+                            >
                                 Z
                             </span>
                             ZORD
@@ -116,7 +118,7 @@ const Footer = () => {
                         </ul>
                         <Link
                             to="/register"
-                            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                         >
                             Commencer
                             <ArrowRight size={15} aria-hidden="true" />
